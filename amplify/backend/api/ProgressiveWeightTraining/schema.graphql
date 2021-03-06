@@ -1,0 +1,29 @@
+type Exercise @model @auth(rules: [{allow: public}]) @key(name: "bySession", fields: ["sessionID"]) @key(name: "byUser", fields: ["userID"]) {
+  id: ID!
+  name: String
+  sessionID: ID
+  userID: ID
+}
+
+type Session @model @auth(rules: [{allow: public}]) @key(name: "byRoutine", fields: ["routineID"]) @key(name: "byUser", fields: ["userID"]) {
+  id: ID!
+  name: String
+  routineID: ID
+  Exercises: [Exercise] @connection(keyName: "bySession", fields: ["id"])
+  userID: ID
+}
+
+type Routine @model @auth(rules: [{allow: public}]) @key(name: "byUser", fields: ["userID"]) {
+  id: ID!
+  name: String
+  userID: ID
+  Sessions: [Session] @connection(keyName: "byRoutine", fields: ["id"])
+}
+
+type User @model @auth(rules: [{allow: public}]) {
+  id: ID!
+  name: String
+  Routines: [Routine] @connection(keyName: "byUser", fields: ["id"])
+  Sessions: [Session] @connection(keyName: "byUser", fields: ["id"])
+  Exercises: [Exercise] @connection(keyName: "byUser", fields: ["id"])
+}
