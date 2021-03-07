@@ -11,7 +11,6 @@
 
 <script>
 export default {
-  name: "App",
   props: {
     value: String,
   },
@@ -19,7 +18,7 @@ export default {
     return {
       currentValue: this.value,
       rules: {
-        nameIsPlainText: (value) => {
+        nameIsPlainText: value => {
           const pattern = /^[\w ]+$/;
           return pattern.test(value) || "name contains invalid characters";
         },

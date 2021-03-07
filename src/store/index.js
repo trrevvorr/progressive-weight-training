@@ -34,7 +34,7 @@ export default new Vuex.Store({
       localStorage.removeItem(USER_ID_STORAGE_KEY);
       state.userId = null;
       state.user = null;
-      state.routines = null;
+      state.routines = [];
     },
   },
   getters: {

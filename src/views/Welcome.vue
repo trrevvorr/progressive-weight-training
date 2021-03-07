@@ -4,20 +4,34 @@
     <v-card class="section">
       <v-card-title>Login</v-card-title>
       <v-card-subtitle
-        >If you already have an account, enter your user ID below to login.</v-card-subtitle
+        >If you already have an account, enter your user ID below to
+        login.</v-card-subtitle
       >
       <v-card-text>
-        <v-text-field dense maxlength="50" label="User Id" v-model="queryUserId"></v-text-field>
+        <v-text-field
+          dense
+          maxlength="50"
+          label="User Id"
+          v-model="userIdToSearch"
+        ></v-text-field>
       </v-card-text>
       <v-card-actions>
-        <v-btn @click="queryUser" text color="primary">Login</v-btn>
+        <SubmitButton
+          :onClick="tryGetUser"
+          :onSuccess="setUserIdAndLogIn"
+          :disabled="!userIdToSearch"
+          errorMessage="Failed to log in. Try again later."
+        >
+          Login
+        </SubmitButton>
       </v-card-actions>
     </v-card>
 
     <v-card class="section">
       <v-card-title>New Account</v-card-title>
       <v-card-subtitle
-        >If you don't have an account yet, enter your name to create one.</v-card-subtitle
+        >If you don't have an account yet, enter your name to create
+        one.</v-card-subtitle
       >
       <v-card-text>
         <v-form v-model="nameFormValid">
@@ -25,9 +39,14 @@
         </v-form>
       </v-card-text>
       <v-card-actions>
-        <v-btn @click="tryCreateUser" :disabled="!nameFormValid" text color="primary">
+        <SubmitButton
+          :onClick="tryCreateUser"
+          :onSuccess="loginAsUser"
+          :disabled="!nameFormValid"
+          errorMessage="Failed to create account. Try again later."
+        >
           Create Account
-        </v-btn>
+        </SubmitButton>
       </v-card-actions>
     </v-card>
   </div>
@@ -35,20 +54,24 @@
 
 <script>
 import NameField from "../components/NameField";
+import SubmitButton from "../components/SubmitButton";
 import routes from "../router/routes";
 import { mapActions, mapMutations, mapGetters } from "vuex";
 
 export default {
   components: {
     NameField,
+    SubmitButton,
   },
   data: function() {
     return {
       newUserName: "",
-      queryUserId: "",
+      newUserLoading: false,
+      newUserError: false,
+      userIdToSearch: "",
       nameFormValid: false,
       rules: {
-        nameIsPlainText: (value) => {
+        nameIsPlainText: value => {
           const pattern = /^[\w ]+$/;
           return pattern.test(value) || "name contains invalid characters";
         },
@@ -62,34 +85,25 @@ export default {
     ...mapMutations(["setUserId"]),
     ...mapActions(["createUser", "loadUser"]),
     tryCreateUser() {
-      if (this.newUserName) {
-        this.createUser(this.newUserName)
-          .then(() => this.loginAsUser(routes.userSettings.name))
-          .catch(this.logError);
-      }
+      return this.createUser(this.newUserName);
     },
-    setUserIdAndLogIn(id) {
-      if (id) {
-        this.setUserId(id);
-        this.loginAsUser(routes.userSettings.name);
+    setUserIdAndLogIn(user) {
+      if (user.id) {
+        this.setUserId(user.id);
+        this.loginAsUser();
       } else {
-        this.logError("no ID provided");
+        console.error("no ID provided");
       }
     },
-    loginAsUser(routeName) {
+    loginAsUser() {
       if (this.userId) {
-        this.$router.push({ name: routeName });
+        this.$router.push({ name: routes.userSettings.name });
       } else {
-        this.logError("userId not set");
+        console.error("userId not set");
       }
     },
-    logError(error) {
-      console.error(error);
-    },
-    queryUser() {
-      this.loadUser(this.queryUserId)
-        .then((model) => this.setUserIdAndLogIn(model.id))
-        .catch(this.logError);
+    tryGetUser() {
+      return this.loadUser(this.userIdToSearch);
     },
   },
 };

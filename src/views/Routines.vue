@@ -13,9 +13,18 @@
         ></v-text-field>
       </v-card-text>
       <v-card-actions>
-        <v-btn @click="tryCreateRoutine" :disabled="!newRoutineName" text color="primary">
+        <SubmitButton
+          :onClick="tryCreateRoutine"
+          :onSuccess="
+            () => {
+              newRoutineName = null;
+            }
+          "
+          :disabled="!newRoutineName"
+          errorMessage="Failed to create routine. Try again later."
+        >
           Create Routine
-        </v-btn>
+        </SubmitButton>
       </v-card-actions>
     </v-card>
   </div>
@@ -23,10 +32,12 @@
 
 <script>
 import { mapActions, mapGetters } from "vuex";
-// import routes from "../router/routes";
+import SubmitButton from "../components/SubmitButton";
 
 export default {
-  props: {},
+  components: {
+    SubmitButton,
+  },
   data: function() {
     return {
       newRoutineName: null,
@@ -39,14 +50,10 @@ export default {
   methods: {
     ...mapActions(["createRoutine"]),
     tryCreateRoutine() {
-      if (this.newRoutineName) {
-        this.createRoutine({ name: this.newRoutineName, userId: this.userId })
-          .then((model) => {
-            this.newRoutineName = null;
-            console.log(model);
-          })
-          .catch((error) => console.error(error));
-      }
+      return this.createRoutine({
+        name: this.newRoutineName,
+        userId: this.userId,
+      });
     },
   },
 };

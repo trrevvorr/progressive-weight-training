@@ -31,9 +31,13 @@
         <v-skeleton-loader v-else max-width="300" type="text" />
       </v-card-text>
       <v-card-actions>
-        <v-btn @click="tryUpdateName" :disabled="!userName || !nameFormValid" text color="primary"
-          >Update Name</v-btn
+        <SubmitButton
+          :onClick="tryUpdateName"
+          :disabled="!userName || !nameFormValid"
+          errorMessage="Failed to change name. Try again later."
         >
+          Update Name
+        </SubmitButton>
       </v-card-actions>
     </v-card>
   </div>
@@ -41,6 +45,7 @@
 
 <script>
 import NameField from "../components/NameField";
+import SubmitButton from "../components/SubmitButton";
 import { mapActions, mapGetters } from "vuex";
 import routes from "../router/routes";
 
@@ -49,6 +54,7 @@ const COPY_BUTTON_TEXT = "Copy ID";
 export default {
   components: {
     NameField,
+    SubmitButton,
   },
   props: {},
   data: function() {
@@ -75,10 +81,12 @@ export default {
       this.$router.push({ name: routes.logout.name });
     },
     tryUpdateName() {
-      this.updateUserName(this.name);
+      return this.updateUserName(this.name);
     },
     copyId() {
-      navigator.clipboard.writeText(this.userId).then(this.copySuccess, this.copyError);
+      navigator.clipboard
+        .writeText(this.userId)
+        .then(this.copySuccess, this.copyError);
     },
     copySuccess() {
       this.copyButtonText = "Copied!";
