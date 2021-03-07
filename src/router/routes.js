@@ -1,6 +1,7 @@
 import Welcome from "../views/Welcome.vue";
 import User from "../views/User.vue";
 import UserSettings from "../views/UserSettings.vue";
+import Routine from "../views/Routines";
 
 export default {
   welcome: {
@@ -22,5 +23,10 @@ export default {
     path: "settings",
     name: "UserSettings",
     component: UserSettings,
+  },
+  routines: {
+    path: "routines",
+    name: "Routines",
+    component: Routine,
   },
 };

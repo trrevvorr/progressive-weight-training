@@ -13,6 +13,7 @@ const router = new VueRouter({
       ...routes.user,
       children: [
         routes.userSettings,
+        routes.routines,
         {
           ...routes.userSettings,
           path: "",

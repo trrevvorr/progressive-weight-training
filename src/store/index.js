@@ -1,7 +1,8 @@
 import Vue from "vue";
 import Vuex from "vuex";
-import { DataStore } from "@aws-amplify/datastore";
-import { User } from "../models";
+import { API, graphqlOperation } from "aws-amplify";
+import { getUser } from "../graphql/queries";
+import { createRoutine, createUser, updateUser } from "../graphql/mutations";
 
 Vue.use(Vuex);
 
@@ -11,6 +12,7 @@ export default new Vuex.Store({
   state: {
     userId: null,
     user: null,
+    routines: [],
   },
   mutations: {
     setUserId(state, id) {
@@ -25,17 +27,21 @@ export default new Vuex.Store({
       state.userId = model.id;
       state.user = model;
     },
+    addRoutine(state, model) {
+      state.routines.push(model);
+    },
     resetState(state) {
       localStorage.removeItem(USER_ID_STORAGE_KEY);
       state.userId = null;
       state.user = null;
+      state.routines = null;
     },
   },
   getters: {
-    userId: (state) => {
+    userId: state => {
       return state.userId;
     },
-    userName: (state) => {
+    userName: state => {
       return state.user && state.user.name;
     },
   },
@@ -45,47 +51,69 @@ export default new Vuex.Store({
     },
     async loadUser({ commit }, id) {
       if (id) {
-        return await DataStore.query(User, id).then((model) => {
-          commit("setUser", model);
-          return model;
-        });
+        return API.graphql(graphqlOperation(getUser, { id: id })).then(
+          response => {
+            commit("setUser", response.data.getUser);
+            return response.data.getUser;
+          },
+        );
       } else {
         return Promise.reject(`loadUser failed due to invalid input: id=${id}`);
       }
     },
     async updateUserName({ state, commit }, name) {
       if (name && state.user) {
-        return await DataStore.save(
-          User.copyOf(state.user, (newUser) => {
-            newUser.name = name;
-          })
-        ).then((model) => {
-          commit("setUser", model);
-        });
+        const input = {
+          id: state.user.id,
+          _version: state.user._version,
+          name: name,
+        };
+        return API.graphql(graphqlOperation(updateUser, { input })).then(
+          response => {
+            commit("setUser", response.data.updateUser);
+            return response.data.updateUser;
+          },
+        );
       } else {
         return Promise.reject(
-          `updateUserName failed due to invalid input: name=${name}, state.user=${state.user}`
+          `updateUserName failed due to invalid input: name=${name}, state.user=${state.user}`,
         );
       }
     },
     async createUser({ commit }, name) {
       if (name) {
-        return DataStore.save(
-          new User({
-            name: name,
-            Routines: [],
-            Sessions: [],
-            Exercises: [],
-          })
-        ).then((model) => {
-          if (model.id) {
-            commit("setUser", model);
-          } else {
-            throw new Error("model created does not have ID: " + model);
-          }
-        });
+        const input = {
+          name: name,
+        };
+        return API.graphql(graphqlOperation(createUser, { input })).then(
+          response => {
+            commit("setUser", response.data.createUser);
+            return response.data.createUser;
+          },
+        );
       } else {
-        return Promise.reject(`createUser failed due to invalid input: name=${name}`);
+        return Promise.reject(
+          `createUser failed due to invalid input: name=${name}`,
+        );
+      }
+    },
+    async createRoutine({ commit }, data) {
+      if (data && data.name && data.userId) {
+        const input = {
+          name: data.name,
+          userID: data.userId,
+        };
+        return API.graphql(graphqlOperation(createRoutine, { input })).then(
+          response => {
+            commit("addRoutine", response.data.createRoutine);
+            return response.data.createRoutine;
+          },
+        );
+      } else {
+        return Promise.reject(
+          `createRoutine failed due to invalid input: name=${data &&
+            data.name}, userId=${data && data.userId}`,
+        );
       }
     },
   },
