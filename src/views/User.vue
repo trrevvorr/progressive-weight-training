@@ -12,7 +12,7 @@
     <v-card class="section">
       <v-card-title>ID</v-card-title>
       <v-card-text>
-        <code>{{ id }}</code>
+        <code>{{ userId }}</code>
         <v-alert class="id-warning" dense outlined text type="warning">
           Remember this ID! Without it, you cannot log in!
         </v-alert>
@@ -25,13 +25,13 @@
     <v-card class="section">
       <v-card-title>Name</v-card-title>
       <v-card-text>
-        <v-form v-if="name !== null" v-model="nameFormValid">
+        <v-form v-if="userName" v-model="nameFormValid">
           <NameField v-model="name" />
         </v-form>
         <v-skeleton-loader v-else max-width="300" type="text" />
       </v-card-text>
       <v-card-actions>
-        <v-btn @click="updateName" :disabled="!name || !nameFormValid" text color="primary"
+        <v-btn @click="tryUpdateName" :disabled="!userName || !nameFormValid" text color="primary"
           >Update Name</v-btn
         >
       </v-card-actions>
@@ -40,9 +40,9 @@
 </template>
 
 <script>
-import { DataStore } from "@aws-amplify/datastore";
-import { User } from "../models";
 import NameField from "../components/NameField";
+import { mapActions } from "vuex";
+import { mapGetters } from "vuex";
 
 const COPY_BUTTON_TEXT = "Copy ID";
 
@@ -50,50 +50,39 @@ export default {
   components: {
     NameField,
   },
-  props: {
-    id: String,
-  },
+  props: {},
   data: function() {
     return {
       name: null,
-      user: null,
       nameFormValid: true,
       copyButtonText: COPY_BUTTON_TEXT,
     };
   },
-  created: function() {
-    this.getUser();
+  created() {
+    if (this.userName) {
+      this.name = this.userName;
+    } else {
+      this.loadUser(this.userId);
+    }
+  },
+  computed: {
+    ...mapGetters(["userId", "userName"]),
+  },
+  watch: {
+    userName: function(newUserName) {
+      this.name = newUserName;
+    },
   },
   methods: {
+    ...mapActions(["loadUser", "updateUserName"]),
     logOut() {
-      this.$router.push({ name: "Welcome" });
+      this.$router.push({ name: "Logout" });
     },
-    getUser() {
-      if (this.id) {
-        DataStore.query(User, this.id)
-          .then((model) => {
-            console.log(model);
-            this.name = model.name;
-            this.user = model;
-          })
-          .catch((error) => console.error(error));
-      }
-    },
-    updateName() {
-      if (this.name) {
-        DataStore.save(
-          User.copyOf(this.user, (newUser) => {
-            newUser.name = this.name;
-          })
-        )
-          .then((model) => {
-            console.log(model);
-          })
-          .catch((error) => console.error(error));
-      }
+    tryUpdateName() {
+      this.updateUserName(this.name);
     },
     copyId() {
-      navigator.clipboard.writeText(this.id).then(this.copySuccess, this.copyError);
+      navigator.clipboard.writeText(this.userId).then(this.copySuccess, this.copyError);
     },
     copySuccess() {
       this.copyButtonText = "Copied!";

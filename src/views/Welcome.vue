@@ -20,12 +20,12 @@
         >If you don't have an account yet, enter your name to create one.</v-card-subtitle
       >
       <v-card-text>
-        <v-form v-if="name !== null" v-model="nameFormValid">
+        <v-form v-model="nameFormValid">
           <NameField v-model="newUserName" />
         </v-form>
       </v-card-text>
       <v-card-actions>
-        <v-btn @click="createUser" :disabled="!nameFormValid" text color="primary">
+        <v-btn @click="tryCreateUser" :disabled="!nameFormValid" text color="primary">
           Create Account
         </v-btn>
       </v-card-actions>
@@ -34,9 +34,8 @@
 </template>
 
 <script>
-import { DataStore } from "@aws-amplify/datastore";
-import { User } from "../models";
 import NameField from "../components/NameField";
+import { mapActions, mapMutations, mapGetters } from "vuex";
 
 export default {
   components: {
@@ -55,37 +54,40 @@ export default {
       },
     };
   },
+  computed: {
+    ...mapGetters(["userId"]),
+  },
   methods: {
-    createUser() {
+    ...mapMutations(["setUserId"]),
+    ...mapActions(["createUser", "loadUser"]),
+    tryCreateUser() {
       if (this.newUserName) {
-        DataStore.save(
-          new User({
-            name: this.newUserName,
-            Routines: [],
-            Sessions: [],
-            Exercises: [],
-          })
-        )
+        this.createUser(this.newUserName)
           .then(this.loginAsUser)
           .catch(this.logError);
       }
     },
-    loginAsUser(model) {
-      console.info(model);
-      const id = model.id;
-
+    setUserIdAndLogIn(id) {
       if (id) {
-        this.$router.push({ path: `user/${id}` });
+        this.setUserId(id);
+        this.loginAsUser();
       } else {
-        this.logError("could not find ID from model");
+        this.logError("no ID provided");
+      }
+    },
+    loginAsUser() {
+      if (this.userId) {
+        this.$router.push({ name: "User" });
+      } else {
+        this.logError("userId not set");
       }
     },
     logError(error) {
       console.error(error);
     },
     queryUser() {
-      DataStore.query(User, this.queryUserId)
-        .then(this.loginAsUser)
+      this.loadUser(this.queryUserId)
+        .then((model) => this.setUserIdAndLogIn(model.id))
         .catch(this.logError);
     },
   },
