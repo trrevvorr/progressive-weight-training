@@ -1,36 +1,58 @@
 <template>
   <div class="content">
     <h1>Welcome</h1>
-    <div class="query-user-form">
-      <h2>Login</h2>
-      <p>If you already have an account, enter your user ID below to login.</p>
-      <div class="sinlge-input-form">
-        <label for="login-user-id">User Id</label>
-        <input id="login-user-id" v-model="queryUserId" type="text" />
-        <button @click="queryUser">Login</button>
-      </div>
-    </div>
-    <div class="new-user-form">
-      <h2>New Account</h2>
-      <p>If you don't have an account yet, enter your name to create one.</p>
-      <div class="sinlge-input-form">
-        <label for="new-user-name">Name</label>
-        <input id="new-user-name" v-model="newUserName" type="text" />
-        <button @click="createUser">Create Account</button>
-      </div>
-    </div>
+    <v-card class="section">
+      <v-card-title>Login</v-card-title>
+      <v-card-subtitle
+        >If you already have an account, enter your user ID below to login.</v-card-subtitle
+      >
+      <v-card-text>
+        <v-text-field dense maxlength="50" label="User Id" v-model="queryUserId"></v-text-field>
+      </v-card-text>
+      <v-card-actions>
+        <v-btn @click="queryUser" text color="primary">Login</v-btn>
+      </v-card-actions>
+    </v-card>
+
+    <v-card class="section">
+      <v-card-title>New Account</v-card-title>
+      <v-card-subtitle
+        >If you don't have an account yet, enter your name to create one.</v-card-subtitle
+      >
+      <v-card-text>
+        <v-form v-if="name !== null" v-model="nameFormValid">
+          <NameField v-model="newUserName" />
+        </v-form>
+      </v-card-text>
+      <v-card-actions>
+        <v-btn @click="createUser" :disabled="!nameFormValid" text color="primary">
+          Create Account
+        </v-btn>
+      </v-card-actions>
+    </v-card>
   </div>
 </template>
 
 <script>
 import { DataStore } from "@aws-amplify/datastore";
 import { User } from "../models";
+import NameField from "../components/NameField";
 
 export default {
+  components: {
+    NameField,
+  },
   data: function() {
     return {
       newUserName: "",
       queryUserId: "",
+      nameFormValid: false,
+      rules: {
+        nameIsPlainText: (value) => {
+          const pattern = /^[\w ]+$/;
+          return pattern.test(value) || "name contains invalid characters";
+        },
+      },
     };
   },
   methods: {
@@ -71,18 +93,7 @@ export default {
 </script>
 
 <style scoped>
-.query-user-form,
-.new-user-form {
-  margin-top: 5rem;
-}
-.sinlge-input-form {
-  display: inline-grid;
-  width: 100%;
-  grid-template-columns: 1fr 1fr 1fr;
-  grid-gap: 1rem;
-}
-
-.sinlge-input-form label {
-  text-align: right;
+.section {
+  margin-top: 2rem;
 }
 </style>

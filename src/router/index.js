@@ -9,18 +9,18 @@ const routes = [
   {
     path: "/",
     name: "Welcome",
-    component: Welcome,
+    component: Welcome
   },
   {
     path: "/user/:id",
     name: "User",
     component: User,
-    props: true,
-  },
+    props: true
+  }
 ];
 
 const router = new VueRouter({
-  routes,
+  routes
 });
 
 export default router;

@@ -1,31 +1,55 @@
 <template>
   <div class="content">
-    <h1>User</h1>
-    <div class="section">
-      <div>
-        <b class="label">ID:</b><code>{{ id }}</code>
-      </div>
-      <div><i>Remember this ID! If you forget it, you will be unable to log back in!</i></div>
-    </div>
-    <div class="section">
-      <div v-if="name">
-        <div class="sinlge-input-form">
-          <label for="user-name">Name: </label>
-          <input id="user-name" v-model="name" type="text" />
-          <button @click="updateName">Save Name</button>
-        </div>
-      </div>
-      <div v-else>Loading Name...</div>
-    </div>
-    <router-link :to="{ name: 'Welcome' }">Log Out</router-link>
+    <v-row>
+      <v-col>
+        <h1>User Details</h1>
+      </v-col>
+      <v-col align-self="center" cols="auto">
+        <v-btn @click="logOut">Log Out</v-btn>
+      </v-col>
+    </v-row>
+
+    <v-card class="section">
+      <v-card-title>ID</v-card-title>
+      <v-card-text>
+        <code>{{ id }}</code>
+        <v-alert class="id-warning" dense outlined text type="warning">
+          Remember this ID! Without it, you cannot log in!
+        </v-alert>
+      </v-card-text>
+      <v-card-actions>
+        <v-btn @click="copyId" text color="primary">{{ copyButtonText }}</v-btn>
+      </v-card-actions>
+    </v-card>
+
+    <v-card class="section">
+      <v-card-title>Name</v-card-title>
+      <v-card-text>
+        <v-form v-if="name !== null" v-model="nameFormValid">
+          <NameField v-model="name" />
+        </v-form>
+        <v-skeleton-loader v-else max-width="300" type="text" />
+      </v-card-text>
+      <v-card-actions>
+        <v-btn @click="updateName" :disabled="!name || !nameFormValid" text color="primary"
+          >Update Name</v-btn
+        >
+      </v-card-actions>
+    </v-card>
   </div>
 </template>
 
 <script>
 import { DataStore } from "@aws-amplify/datastore";
 import { User } from "../models";
+import NameField from "../components/NameField";
+
+const COPY_BUTTON_TEXT = "Copy ID";
 
 export default {
+  components: {
+    NameField,
+  },
   props: {
     id: String,
   },
@@ -33,12 +57,17 @@ export default {
     return {
       name: null,
       user: null,
+      nameFormValid: true,
+      copyButtonText: COPY_BUTTON_TEXT,
     };
   },
   created: function() {
     this.getUser();
   },
   methods: {
+    logOut() {
+      this.$router.push({ name: "Welcome" });
+    },
     getUser() {
       if (this.id) {
         DataStore.query(User, this.id)
@@ -63,28 +92,31 @@ export default {
           .catch((error) => console.error(error));
       }
     },
+    copyId() {
+      navigator.clipboard.writeText(this.id).then(this.copySuccess, this.copyError);
+    },
+    copySuccess() {
+      this.copyButtonText = "Copied!";
+      setTimeout(this.copyReset, 3000);
+    },
+    copyError(e) {
+      console.error(e);
+      this.copyButtonText = "Copy Failed!";
+      setTimeout(this.copyReset, 3000);
+    },
+    copyReset() {
+      this.copyButtonText = COPY_BUTTON_TEXT;
+    },
   },
 };
 </script>
 
 <style scoped>
-.label {
-  margin-right: 0.5rem;
-}
-
 .section {
-  text-align: left;
-  margin: 1rem;
-  margin-bottom: 3rem;
+  margin-top: 2rem;
 }
 
-.sinlge-input-form {
-  display: inline-grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  grid-gap: 1rem;
-}
-
-.sinlge-input-form label {
-  text-align: right;
+.id-warning {
+  margin-top: 1rem;
 }
 </style>
