@@ -15,15 +15,28 @@
       <v-card-actions>
         <SubmitButton
           :onClick="tryCreateRoutine"
-          :onSuccess="
-            () => {
-              newRoutineName = null;
-            }
-          "
+          :onSuccess="() => (newRoutineName = null)"
           :disabled="!newRoutineName"
           errorMessage="Failed to create routine. Try again later."
         >
           Create Routine
+        </SubmitButton>
+      </v-card-actions>
+    </v-card>
+
+    <v-card
+      v-for="routine in sortedRoutines"
+      :key="routine.id"
+      class="section-mini"
+    >
+      <v-card-title>{{ routine.name }}</v-card-title>
+      <v-card-actions>
+        <SubmitButton
+          :onClick="() => tryDeleteRoutine(routine)"
+          buttonColor="error"
+          errorMessage="Failed to delete routine. Try again later."
+        >
+          Delete
         </SubmitButton>
       </v-card-actions>
     </v-card>
@@ -45,15 +58,31 @@ export default {
   },
   created() {},
   computed: {
-    ...mapGetters(["userId"]),
+    ...mapGetters(["userId", "routines"]),
+    sortedRoutines() {
+      return [...this.routines].sort((a, b) => {
+        var nameA = a.name.toUpperCase();
+        var nameB = b.name.toUpperCase();
+        if (nameA < nameB) {
+          return -1;
+        }
+        if (nameA > nameB) {
+          return 1;
+        }
+        return 0;
+      });
+    },
   },
   methods: {
-    ...mapActions(["createRoutine"]),
+    ...mapActions(["createRoutine", "deleteRoutine"]),
     tryCreateRoutine() {
       return this.createRoutine({
         name: this.newRoutineName,
         userId: this.userId,
       });
+    },
+    tryDeleteRoutine(routine) {
+      return this.deleteRoutine(routine);
     },
   },
 };
@@ -63,8 +92,7 @@ export default {
 .section {
   margin-top: 2rem;
 }
-
-.id-warning {
+.section-mini {
   margin-top: 1rem;
 }
 </style>

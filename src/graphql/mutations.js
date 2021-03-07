@@ -11,9 +11,6 @@ export const createExercise = /* GraphQL */ `
       name
       sessionID
       userID
-      _version
-      _deleted
-      _lastChangedAt
       createdAt
       updatedAt
     }
@@ -29,9 +26,6 @@ export const updateExercise = /* GraphQL */ `
       name
       sessionID
       userID
-      _version
-      _deleted
-      _lastChangedAt
       createdAt
       updatedAt
     }
@@ -47,9 +41,6 @@ export const deleteExercise = /* GraphQL */ `
       name
       sessionID
       userID
-      _version
-      _deleted
-      _lastChangedAt
       createdAt
       updatedAt
     }
@@ -65,9 +56,6 @@ export const createSession = /* GraphQL */ `
       name
       routineID
       userID
-      _version
-      _deleted
-      _lastChangedAt
       createdAt
       updatedAt
       Exercises {
@@ -76,14 +64,10 @@ export const createSession = /* GraphQL */ `
           name
           sessionID
           userID
-          _version
-          _deleted
-          _lastChangedAt
           createdAt
           updatedAt
         }
         nextToken
-        startedAt
       }
     }
   }
@@ -98,9 +82,6 @@ export const updateSession = /* GraphQL */ `
       name
       routineID
       userID
-      _version
-      _deleted
-      _lastChangedAt
       createdAt
       updatedAt
       Exercises {
@@ -109,14 +90,10 @@ export const updateSession = /* GraphQL */ `
           name
           sessionID
           userID
-          _version
-          _deleted
-          _lastChangedAt
           createdAt
           updatedAt
         }
         nextToken
-        startedAt
       }
     }
   }
@@ -131,9 +108,6 @@ export const deleteSession = /* GraphQL */ `
       name
       routineID
       userID
-      _version
-      _deleted
-      _lastChangedAt
       createdAt
       updatedAt
       Exercises {
@@ -142,14 +116,10 @@ export const deleteSession = /* GraphQL */ `
           name
           sessionID
           userID
-          _version
-          _deleted
-          _lastChangedAt
           createdAt
           updatedAt
         }
         nextToken
-        startedAt
       }
     }
   }
@@ -163,9 +133,6 @@ export const createRoutine = /* GraphQL */ `
       id
       name
       userID
-      _version
-      _deleted
-      _lastChangedAt
       createdAt
       updatedAt
       Sessions {
@@ -174,18 +141,13 @@ export const createRoutine = /* GraphQL */ `
           name
           routineID
           userID
-          _version
-          _deleted
-          _lastChangedAt
           createdAt
           updatedAt
           Exercises {
             nextToken
-            startedAt
           }
         }
         nextToken
-        startedAt
       }
     }
   }
@@ -199,9 +161,6 @@ export const updateRoutine = /* GraphQL */ `
       id
       name
       userID
-      _version
-      _deleted
-      _lastChangedAt
       createdAt
       updatedAt
       Sessions {
@@ -210,18 +169,13 @@ export const updateRoutine = /* GraphQL */ `
           name
           routineID
           userID
-          _version
-          _deleted
-          _lastChangedAt
           createdAt
           updatedAt
           Exercises {
             nextToken
-            startedAt
           }
         }
         nextToken
-        startedAt
       }
     }
   }
@@ -235,9 +189,6 @@ export const deleteRoutine = /* GraphQL */ `
       id
       name
       userID
-      _version
-      _deleted
-      _lastChangedAt
       createdAt
       updatedAt
       Sessions {
@@ -246,18 +197,13 @@ export const deleteRoutine = /* GraphQL */ `
           name
           routineID
           userID
-          _version
-          _deleted
-          _lastChangedAt
           createdAt
           updatedAt
           Exercises {
             nextToken
-            startedAt
           }
         }
         nextToken
-        startedAt
       }
     }
   }
@@ -270,9 +216,6 @@ export const createUser = /* GraphQL */ `
     createUser(input: $input, condition: $condition) {
       id
       name
-      _version
-      _deleted
-      _lastChangedAt
       createdAt
       updatedAt
       Exercises {
@@ -281,14 +224,10 @@ export const createUser = /* GraphQL */ `
           name
           sessionID
           userID
-          _version
-          _deleted
-          _lastChangedAt
           createdAt
           updatedAt
         }
         nextToken
-        startedAt
       }
       Sessions {
         items {
@@ -296,36 +235,26 @@ export const createUser = /* GraphQL */ `
           name
           routineID
           userID
-          _version
-          _deleted
-          _lastChangedAt
           createdAt
           updatedAt
           Exercises {
             nextToken
-            startedAt
           }
         }
         nextToken
-        startedAt
       }
       Routines {
         items {
           id
           name
           userID
-          _version
-          _deleted
-          _lastChangedAt
           createdAt
           updatedAt
           Sessions {
             nextToken
-            startedAt
           }
         }
         nextToken
-        startedAt
       }
     }
   }
@@ -338,9 +267,6 @@ export const updateUser = /* GraphQL */ `
     updateUser(input: $input, condition: $condition) {
       id
       name
-      _version
-      _deleted
-      _lastChangedAt
       createdAt
       updatedAt
       Exercises {
@@ -349,14 +275,10 @@ export const updateUser = /* GraphQL */ `
           name
           sessionID
           userID
-          _version
-          _deleted
-          _lastChangedAt
           createdAt
           updatedAt
         }
         nextToken
-        startedAt
       }
       Sessions {
         items {
@@ -364,36 +286,26 @@ export const updateUser = /* GraphQL */ `
           name
           routineID
           userID
-          _version
-          _deleted
-          _lastChangedAt
           createdAt
           updatedAt
           Exercises {
             nextToken
-            startedAt
           }
         }
         nextToken
-        startedAt
       }
       Routines {
         items {
           id
           name
           userID
-          _version
-          _deleted
-          _lastChangedAt
           createdAt
           updatedAt
           Sessions {
             nextToken
-            startedAt
           }
         }
         nextToken
-        startedAt
       }
     }
   }
@@ -406,9 +318,6 @@ export const deleteUser = /* GraphQL */ `
     deleteUser(input: $input, condition: $condition) {
       id
       name
-      _version
-      _deleted
-      _lastChangedAt
       createdAt
       updatedAt
       Exercises {
@@ -417,14 +326,10 @@ export const deleteUser = /* GraphQL */ `
           name
           sessionID
           userID
-          _version
-          _deleted
-          _lastChangedAt
           createdAt
           updatedAt
         }
         nextToken
-        startedAt
       }
       Sessions {
         items {
@@ -432,36 +337,26 @@ export const deleteUser = /* GraphQL */ `
           name
           routineID
           userID
-          _version
-          _deleted
-          _lastChangedAt
           createdAt
           updatedAt
           Exercises {
             nextToken
-            startedAt
           }
         }
         nextToken
-        startedAt
       }
       Routines {
         items {
           id
           name
           userID
-          _version
-          _deleted
-          _lastChangedAt
           createdAt
           updatedAt
           Sessions {
             nextToken
-            startedAt
           }
         }
         nextToken
-        startedAt
       }
     }
   }

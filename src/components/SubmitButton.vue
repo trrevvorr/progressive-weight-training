@@ -5,7 +5,7 @@
       :disabled="disabled"
       text
       :loading="loading"
-      color="primary"
+      :color="buttonColor"
     >
       <slot />
     </v-btn>
@@ -23,6 +23,10 @@ export default {
     onSuccess: Function,
     onError: Function,
     errorMessage: String,
+    buttonColor: {
+      type: String,
+      default: "primary",
+    },
   },
   data: function() {
     return {

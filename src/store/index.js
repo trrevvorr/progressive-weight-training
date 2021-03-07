@@ -2,7 +2,12 @@ import Vue from "vue";
 import Vuex from "vuex";
 import { API, graphqlOperation } from "aws-amplify";
 import { getUser } from "../graphql/queries";
-import { createRoutine, createUser, updateUser } from "../graphql/mutations";
+import {
+  createRoutine,
+  createUser,
+  deleteRoutine,
+  updateUser,
+} from "../graphql/mutations";
 
 Vue.use(Vuex);
 
@@ -12,7 +17,6 @@ export default new Vuex.Store({
   state: {
     userId: null,
     user: null,
-    routines: [],
   },
   mutations: {
     setUserId(state, id) {
@@ -27,9 +31,6 @@ export default new Vuex.Store({
       state.userId = model.id;
       state.user = model;
     },
-    addRoutine(state, model) {
-      state.routines.push(model);
-    },
     resetState(state) {
       localStorage.removeItem(USER_ID_STORAGE_KEY);
       state.userId = null;
@@ -43,6 +44,9 @@ export default new Vuex.Store({
     },
     userName: state => {
       return state.user && state.user.name;
+    },
+    routines: state => {
+      return state.user && state.user.Routines && state.user.Routines.items;
     },
   },
   actions: {
@@ -65,7 +69,6 @@ export default new Vuex.Store({
       if (name && state.user) {
         const input = {
           id: state.user.id,
-          _version: state.user._version,
           name: name,
         };
         return API.graphql(graphqlOperation(updateUser, { input })).then(
@@ -97,15 +100,15 @@ export default new Vuex.Store({
         );
       }
     },
-    async createRoutine({ commit }, data) {
+    async createRoutine({ dispatch }, data) {
       if (data && data.name && data.userId) {
         const input = {
           name: data.name,
           userID: data.userId,
         };
         return API.graphql(graphqlOperation(createRoutine, { input })).then(
-          response => {
-            commit("addRoutine", response.data.createRoutine);
+          async response => {
+            await dispatch("loadUser", data.userId);
             return response.data.createRoutine;
           },
         );
@@ -113,6 +116,22 @@ export default new Vuex.Store({
         return Promise.reject(
           `createRoutine failed due to invalid input: name=${data &&
             data.name}, userId=${data && data.userId}`,
+        );
+      }
+    },
+    async deleteRoutine({ dispatch, state }, routine) {
+      if (routine && routine.id) {
+        const input = {
+          id: routine.id,
+        };
+        return API.graphql(graphqlOperation(deleteRoutine, { input })).then(
+          async () => {
+            await dispatch("loadUser", state.userId);
+          },
+        );
+      } else {
+        return Promise.reject(
+          `deleteRoutine failed due to invalid input: routine=${routine}`,
         );
       }
     },

@@ -8,9 +8,6 @@ export const getExercise = /* GraphQL */ `
       name
       sessionID
       userID
-      _version
-      _deleted
-      _lastChangedAt
       createdAt
       updatedAt
     }
@@ -28,43 +25,10 @@ export const listExercises = /* GraphQL */ `
         name
         sessionID
         userID
-        _version
-        _deleted
-        _lastChangedAt
         createdAt
         updatedAt
       }
       nextToken
-      startedAt
-    }
-  }
-`;
-export const syncExercises = /* GraphQL */ `
-  query SyncExercises(
-    $filter: ModelExerciseFilterInput
-    $limit: Int
-    $nextToken: String
-    $lastSync: AWSTimestamp
-  ) {
-    syncExercises(
-      filter: $filter
-      limit: $limit
-      nextToken: $nextToken
-      lastSync: $lastSync
-    ) {
-      items {
-        id
-        name
-        sessionID
-        userID
-        _version
-        _deleted
-        _lastChangedAt
-        createdAt
-        updatedAt
-      }
-      nextToken
-      startedAt
     }
   }
 `;
@@ -75,9 +39,6 @@ export const getSession = /* GraphQL */ `
       name
       routineID
       userID
-      _version
-      _deleted
-      _lastChangedAt
       createdAt
       updatedAt
       Exercises {
@@ -86,14 +47,10 @@ export const getSession = /* GraphQL */ `
           name
           sessionID
           userID
-          _version
-          _deleted
-          _lastChangedAt
           createdAt
           updatedAt
         }
         nextToken
-        startedAt
       }
     }
   }
@@ -110,9 +67,6 @@ export const listSessions = /* GraphQL */ `
         name
         routineID
         userID
-        _version
-        _deleted
-        _lastChangedAt
         createdAt
         updatedAt
         Exercises {
@@ -121,62 +75,13 @@ export const listSessions = /* GraphQL */ `
             name
             sessionID
             userID
-            _version
-            _deleted
-            _lastChangedAt
             createdAt
             updatedAt
           }
           nextToken
-          startedAt
         }
       }
       nextToken
-      startedAt
-    }
-  }
-`;
-export const syncSessions = /* GraphQL */ `
-  query SyncSessions(
-    $filter: ModelSessionFilterInput
-    $limit: Int
-    $nextToken: String
-    $lastSync: AWSTimestamp
-  ) {
-    syncSessions(
-      filter: $filter
-      limit: $limit
-      nextToken: $nextToken
-      lastSync: $lastSync
-    ) {
-      items {
-        id
-        name
-        routineID
-        userID
-        _version
-        _deleted
-        _lastChangedAt
-        createdAt
-        updatedAt
-        Exercises {
-          items {
-            id
-            name
-            sessionID
-            userID
-            _version
-            _deleted
-            _lastChangedAt
-            createdAt
-            updatedAt
-          }
-          nextToken
-          startedAt
-        }
-      }
-      nextToken
-      startedAt
     }
   }
 `;
@@ -186,9 +91,6 @@ export const getRoutine = /* GraphQL */ `
       id
       name
       userID
-      _version
-      _deleted
-      _lastChangedAt
       createdAt
       updatedAt
       Sessions {
@@ -197,18 +99,13 @@ export const getRoutine = /* GraphQL */ `
           name
           routineID
           userID
-          _version
-          _deleted
-          _lastChangedAt
           createdAt
           updatedAt
           Exercises {
             nextToken
-            startedAt
           }
         }
         nextToken
-        startedAt
       }
     }
   }
@@ -224,9 +121,6 @@ export const listRoutines = /* GraphQL */ `
         id
         name
         userID
-        _version
-        _deleted
-        _lastChangedAt
         createdAt
         updatedAt
         Sessions {
@@ -235,61 +129,13 @@ export const listRoutines = /* GraphQL */ `
             name
             routineID
             userID
-            _version
-            _deleted
-            _lastChangedAt
             createdAt
             updatedAt
           }
           nextToken
-          startedAt
         }
       }
       nextToken
-      startedAt
-    }
-  }
-`;
-export const syncRoutines = /* GraphQL */ `
-  query SyncRoutines(
-    $filter: ModelRoutineFilterInput
-    $limit: Int
-    $nextToken: String
-    $lastSync: AWSTimestamp
-  ) {
-    syncRoutines(
-      filter: $filter
-      limit: $limit
-      nextToken: $nextToken
-      lastSync: $lastSync
-    ) {
-      items {
-        id
-        name
-        userID
-        _version
-        _deleted
-        _lastChangedAt
-        createdAt
-        updatedAt
-        Sessions {
-          items {
-            id
-            name
-            routineID
-            userID
-            _version
-            _deleted
-            _lastChangedAt
-            createdAt
-            updatedAt
-          }
-          nextToken
-          startedAt
-        }
-      }
-      nextToken
-      startedAt
     }
   }
 `;
@@ -298,9 +144,6 @@ export const getUser = /* GraphQL */ `
     getUser(id: $id) {
       id
       name
-      _version
-      _deleted
-      _lastChangedAt
       createdAt
       updatedAt
       Exercises {
@@ -309,14 +152,10 @@ export const getUser = /* GraphQL */ `
           name
           sessionID
           userID
-          _version
-          _deleted
-          _lastChangedAt
           createdAt
           updatedAt
         }
         nextToken
-        startedAt
       }
       Sessions {
         items {
@@ -324,36 +163,26 @@ export const getUser = /* GraphQL */ `
           name
           routineID
           userID
-          _version
-          _deleted
-          _lastChangedAt
           createdAt
           updatedAt
           Exercises {
             nextToken
-            startedAt
           }
         }
         nextToken
-        startedAt
       }
       Routines {
         items {
           id
           name
           userID
-          _version
-          _deleted
-          _lastChangedAt
           createdAt
           updatedAt
           Sessions {
             nextToken
-            startedAt
           }
         }
         nextToken
-        startedAt
       }
     }
   }
@@ -368,9 +197,6 @@ export const listUsers = /* GraphQL */ `
       items {
         id
         name
-        _version
-        _deleted
-        _lastChangedAt
         createdAt
         updatedAt
         Exercises {
@@ -379,14 +205,10 @@ export const listUsers = /* GraphQL */ `
             name
             sessionID
             userID
-            _version
-            _deleted
-            _lastChangedAt
             createdAt
             updatedAt
           }
           nextToken
-          startedAt
         }
         Sessions {
           items {
@@ -394,103 +216,23 @@ export const listUsers = /* GraphQL */ `
             name
             routineID
             userID
-            _version
-            _deleted
-            _lastChangedAt
             createdAt
             updatedAt
           }
           nextToken
-          startedAt
         }
         Routines {
           items {
             id
             name
             userID
-            _version
-            _deleted
-            _lastChangedAt
             createdAt
             updatedAt
           }
           nextToken
-          startedAt
         }
       }
       nextToken
-      startedAt
-    }
-  }
-`;
-export const syncUsers = /* GraphQL */ `
-  query SyncUsers(
-    $filter: ModelUserFilterInput
-    $limit: Int
-    $nextToken: String
-    $lastSync: AWSTimestamp
-  ) {
-    syncUsers(
-      filter: $filter
-      limit: $limit
-      nextToken: $nextToken
-      lastSync: $lastSync
-    ) {
-      items {
-        id
-        name
-        _version
-        _deleted
-        _lastChangedAt
-        createdAt
-        updatedAt
-        Exercises {
-          items {
-            id
-            name
-            sessionID
-            userID
-            _version
-            _deleted
-            _lastChangedAt
-            createdAt
-            updatedAt
-          }
-          nextToken
-          startedAt
-        }
-        Sessions {
-          items {
-            id
-            name
-            routineID
-            userID
-            _version
-            _deleted
-            _lastChangedAt
-            createdAt
-            updatedAt
-          }
-          nextToken
-          startedAt
-        }
-        Routines {
-          items {
-            id
-            name
-            userID
-            _version
-            _deleted
-            _lastChangedAt
-            createdAt
-            updatedAt
-          }
-          nextToken
-          startedAt
-        }
-      }
-      nextToken
-      startedAt
     }
   }
 `;
