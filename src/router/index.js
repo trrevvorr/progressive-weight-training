@@ -1,53 +1,43 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
-import Welcome from "../views/Welcome.vue";
-import User from "../views/User.vue";
 import store from "../store";
-
-const WELCOME_ROUTE_NAME = "Welcome";
-const LOG_OUT_ROUTE_NAME = "Logout";
-const USER_ROUTE_NAME = "User";
+import routes from "./routes";
 
 Vue.use(VueRouter);
 
-const routes = [
-  {
-    path: "/",
-    name: WELCOME_ROUTE_NAME,
-    component: Welcome,
-  },
-  {
-    path: "/logout",
-    name: LOG_OUT_ROUTE_NAME,
-  },
-  {
-    path: "/user",
-    name: USER_ROUTE_NAME,
-    component: User,
-    props: true,
-  },
-];
-
 const router = new VueRouter({
-  routes,
+  routes: [
+    routes.welcome,
+    routes.logout,
+    {
+      ...routes.user,
+      children: [
+        routes.userSettings,
+        {
+          ...routes.userSettings,
+          path: "",
+        },
+      ],
+    },
+  ],
 });
 
 router.beforeEach(async (to, from, next) => {
-  if (to.name === WELCOME_ROUTE_NAME) {
+  if (to.name === routes.welcome.name) {
     // if user logged in already, redirect to user page
     if (store.getters.userId) {
-      next({ name: USER_ROUTE_NAME });
+      next({ name: routes.userSettings.name });
     } else {
       next();
     }
-  } else if (to.name === LOG_OUT_ROUTE_NAME) {
+  } else if (to.name === routes.logout.name) {
     // log out and redirect to welcome page
     await store.dispatch("logout");
-    next({ name: WELCOME_ROUTE_NAME });
+    next({ name: routes.welcome.name });
   } else {
     // if user not logged in already, redirect to welcome page
     if (!store.getters.userId) {
-      next({ name: WELCOME_ROUTE_NAME });
+      next({ name: routes.welcome.name });
     } else {
       next();
     }

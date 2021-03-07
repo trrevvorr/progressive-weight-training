@@ -35,6 +35,7 @@
 
 <script>
 import NameField from "../components/NameField";
+import routes from "../router/routes";
 import { mapActions, mapMutations, mapGetters } from "vuex";
 
 export default {
@@ -63,21 +64,21 @@ export default {
     tryCreateUser() {
       if (this.newUserName) {
         this.createUser(this.newUserName)
-          .then(this.loginAsUser)
+          .then(() => this.loginAsUser(routes.userSettings.name))
           .catch(this.logError);
       }
     },
     setUserIdAndLogIn(id) {
       if (id) {
         this.setUserId(id);
-        this.loginAsUser();
+        this.loginAsUser(routes.userSettings.name);
       } else {
         this.logError("no ID provided");
       }
     },
-    loginAsUser() {
+    loginAsUser(routeName) {
       if (this.userId) {
-        this.$router.push({ name: "User" });
+        this.$router.push({ name: routeName });
       } else {
         this.logError("userId not set");
       }

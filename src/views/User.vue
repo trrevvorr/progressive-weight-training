@@ -1,101 +1,28 @@
 <template>
-  <div class="content">
-    <v-row>
-      <v-col>
-        <h1>User Details</h1>
-      </v-col>
-      <v-col align-self="center" cols="auto">
-        <v-btn @click="logOut">Log Out</v-btn>
-      </v-col>
-    </v-row>
-
-    <v-card class="section">
-      <v-card-title>ID</v-card-title>
-      <v-card-text>
-        <code>{{ userId }}</code>
-        <v-alert class="id-warning" dense outlined text type="warning">
-          Remember this ID! Without it, you cannot log in!
-        </v-alert>
-      </v-card-text>
-      <v-card-actions>
-        <v-btn @click="copyId" text color="primary">{{ copyButtonText }}</v-btn>
-      </v-card-actions>
-    </v-card>
-
-    <v-card class="section">
-      <v-card-title>Name</v-card-title>
-      <v-card-text>
-        <v-form v-if="userName" v-model="nameFormValid">
-          <NameField v-model="name" />
-        </v-form>
-        <v-skeleton-loader v-else max-width="300" type="text" />
-      </v-card-text>
-      <v-card-actions>
-        <v-btn @click="tryUpdateName" :disabled="!userName || !nameFormValid" text color="primary"
-          >Update Name</v-btn
-        >
-      </v-card-actions>
-    </v-card>
+  <div class="user">
+    <router-view v-if="this.userName"></router-view>
+    <div v-else>
+      <v-skeleton-loader class="section" type="heading"></v-skeleton-loader>
+      <v-skeleton-loader class="section" type="article, actions"></v-skeleton-loader>
+      <v-skeleton-loader class="section" type="article, actions"></v-skeleton-loader>
+    </div>
   </div>
 </template>
 
 <script>
-import NameField from "../components/NameField";
-import { mapActions } from "vuex";
-import { mapGetters } from "vuex";
-
-const COPY_BUTTON_TEXT = "Copy ID";
+import { mapActions, mapGetters } from "vuex";
 
 export default {
-  components: {
-    NameField,
-  },
-  props: {},
-  data: function() {
-    return {
-      name: null,
-      nameFormValid: true,
-      copyButtonText: COPY_BUTTON_TEXT,
-    };
-  },
   created() {
-    if (this.userName) {
-      this.name = this.userName;
-    } else {
+    if (this.userId && !this.userName) {
       this.loadUser(this.userId);
     }
   },
   computed: {
     ...mapGetters(["userId", "userName"]),
   },
-  watch: {
-    userName: function(newUserName) {
-      this.name = newUserName;
-    },
-  },
   methods: {
     ...mapActions(["loadUser", "updateUserName"]),
-    logOut() {
-      this.$router.push({ name: "Logout" });
-    },
-    tryUpdateName() {
-      this.updateUserName(this.name);
-    },
-    copyId() {
-      navigator.clipboard.writeText(this.userId).then(this.copySuccess, this.copyError);
-    },
-    copySuccess() {
-      this.copyButtonText = "Copied!";
-      setTimeout(this.copyReset, 3000);
-    },
-    copyError(e) {
-      console.error(e);
-      this.copyButtonText = "Copy Failed!";
-      setTimeout(this.copyReset, 3000);
-    },
-    copyReset() {
-      this.copyButtonText = COPY_BUTTON_TEXT;
-    },
   },
 };
 </script>
@@ -103,9 +30,5 @@ export default {
 <style scoped>
 .section {
   margin-top: 2rem;
-}
-
-.id-warning {
-  margin-top: 1rem;
 }
 </style>
