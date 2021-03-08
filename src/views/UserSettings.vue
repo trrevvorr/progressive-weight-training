@@ -1,13 +1,6 @@
 <template>
   <div class="content">
-    <v-row>
-      <v-col>
-        <h1>User Details</h1>
-      </v-col>
-      <v-col align-self="center" cols="auto">
-        <v-btn @click="logOut">Log Out</v-btn>
-      </v-col>
-    </v-row>
+    <h1>User Details</h1>
 
     <v-card class="section">
       <v-card-title>ID</v-card-title>

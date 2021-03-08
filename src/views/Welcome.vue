@@ -97,7 +97,7 @@ export default {
     },
     loginAsUser() {
       if (this.userId) {
-        this.$router.push({ name: routes.userSettings.name });
+        this.$router.push({ name: routes.routines.name });
       } else {
         console.error("userId not set");
       }

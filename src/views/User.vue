@@ -3,8 +3,14 @@
     <router-view v-if="this.userName"></router-view>
     <div v-else>
       <v-skeleton-loader class="section" type="heading"></v-skeleton-loader>
-      <v-skeleton-loader class="section" type="article, actions"></v-skeleton-loader>
-      <v-skeleton-loader class="section" type="article, actions"></v-skeleton-loader>
+      <v-skeleton-loader
+        class="section"
+        type="article, actions"
+      ></v-skeleton-loader>
+      <v-skeleton-loader
+        class="section"
+        type="article, actions"
+      ></v-skeleton-loader>
     </div>
   </div>
 </template>

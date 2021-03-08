@@ -15,7 +15,7 @@ const router = new VueRouter({
         routes.userSettings,
         routes.routines,
         {
-          ...routes.userSettings,
+          ...routes.routines,
           path: "",
         },
       ],
