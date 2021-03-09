@@ -32,7 +32,7 @@
       <v-card-title>{{ routine.name }}</v-card-title>
       <v-card-actions>
         <SubmitButton
-          :onClick="() => tryDeleteRoutine(routine)"
+          :onClick="() => tryDeleteRoutine(routine.id)"
           buttonColor="error"
           errorMessage="Failed to delete routine. Try again later."
         >
@@ -78,11 +78,11 @@ export default {
     tryCreateRoutine() {
       return this.createRoutine({
         name: this.newRoutineName,
-        userId: this.userId,
+        reloadUser: true,
       });
     },
-    tryDeleteRoutine(routine) {
-      return this.deleteRoutine(routine);
+    tryDeleteRoutine(id) {
+      return this.deleteRoutine({ id, reloadUser: true });
     },
   },
 };

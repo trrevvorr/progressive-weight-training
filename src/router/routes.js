@@ -2,6 +2,7 @@ import Welcome from "../views/Welcome.vue";
 import User from "../views/User.vue";
 import UserSettings from "../views/UserSettings.vue";
 import Routine from "../views/Routines";
+import Logout from "../views/Logout";
 
 export default {
   welcome: {
@@ -12,12 +13,12 @@ export default {
   logout: {
     path: "/logout",
     name: "Logout",
+    component: Logout,
   },
   user: {
     path: "/user",
     name: "User",
     component: User,
-    props: true,
   },
   userSettings: {
     path: "settings",

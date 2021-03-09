@@ -17,18 +17,25 @@
 
 <script>
 import { mapActions, mapGetters } from "vuex";
+import routes from "../router/routes";
 
 export default {
   created() {
     if (this.userId && !this.userName) {
-      this.loadUser(this.userId);
+      this.loadUser(this.userId).catch(error => {
+        console.error(
+          `failed to load user for ID ${this.userId}, logging out`,
+          error,
+        );
+        this.logout().then(this.$router.push({ name: routes.welcome.name }));
+      });
     }
   },
   computed: {
     ...mapGetters(["userId", "userName"]),
   },
   methods: {
-    ...mapActions(["loadUser", "updateUserName"]),
+    ...mapActions(["loadUser", "logout"]),
   },
 };
 </script>

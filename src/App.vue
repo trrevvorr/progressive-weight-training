@@ -8,7 +8,7 @@
 
       <v-toolbar-title>Progressive Weight Training</v-toolbar-title>
     </v-app-bar>
-    <v-navigation-drawer v-model="drawer" absolute temporary>
+    <v-navigation-drawer v-if="userId" v-model="drawer" absolute temporary>
       <v-container fluid>
         <v-list nav dense>
           <v-list-item-group
@@ -75,8 +75,13 @@ export default {
   },
   methods: {
     selectNavItem: function(selectedIndex) {
+      const toRouteName = this.navItems[selectedIndex].routeName;
+
+      const wasDrawerOpen = this.drawer;
       this.drawer = false;
-      this.$router.push({ name: this.navItems[selectedIndex].routeName });
+      if (wasDrawerOpen && this.$route.name !== toRouteName) {
+        this.$router.push({ name: toRouteName });
+      }
     },
   },
 };

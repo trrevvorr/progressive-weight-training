@@ -20,7 +20,8 @@
           :onClick="tryGetUser"
           :onSuccess="setUserIdAndLogIn"
           :disabled="!userIdToSearch"
-          errorMessage="Failed to log in. Try again later."
+          fatalMessage="Failed to log in. Try again later."
+          errorMessage="User not found."
         >
           Login
         </SubmitButton>
@@ -43,7 +44,8 @@
           :onClick="tryCreateUser"
           :onSuccess="loginAsUser"
           :disabled="!nameFormValid"
-          errorMessage="Failed to create account. Try again later."
+          errorMessage="Invalid name."
+          fatalMessage="Failed to create account. Try again later."
         >
           Create Account
         </SubmitButton>

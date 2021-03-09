@@ -9,8 +9,8 @@
     >
       <slot />
     </v-btn>
-    <v-snackbar v-model="error" color="red" text>
-      {{ errorMessage }}
+    <v-snackbar v-model="exception" color="red" text>
+      {{ exceptionMessage }}
     </v-snackbar>
   </div>
 </template>
@@ -22,6 +22,7 @@ export default {
     onClick: Function,
     onSuccess: Function,
     onError: Function,
+    fatalMessage: String,
     errorMessage: String,
     buttonColor: {
       type: String,
@@ -31,22 +32,28 @@ export default {
   data: function() {
     return {
       loading: false,
-      error: false,
+      exception: false,
+      exceptionMessage: "",
     };
   },
   methods: {
     takeAction() {
       this.loading = true;
-      this.error = false;
+      this.exception = false;
 
       this.onClick()
         .then(result => {
           this.onSuccess && this.onSuccess(result);
         })
-        .catch(error => {
-          this.error = true;
-          console.error(error);
-          this.onError && this.onError(error);
+        .catch(exception => {
+          this.exception = true;
+          const isError = exception && Math.floor(exception.status / 100) === 4;
+          this.exceptionMessage = isError
+            ? this.errorMessage
+            : this.fatalMessage;
+
+          console.error(exception);
+          this.onError && this.onError(exception);
         })
         .finally(() => (this.loading = false));
     },

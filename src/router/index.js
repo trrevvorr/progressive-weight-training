@@ -25,16 +25,11 @@ const router = new VueRouter({
 
 router.beforeEach(async (to, from, next) => {
   if (to.name === routes.welcome.name) {
-    // if user logged in already, redirect to user page
     if (store.getters.userId) {
-      next({ name: routes.userSettings.name });
+      next(from);
     } else {
       next();
     }
-  } else if (to.name === routes.logout.name) {
-    // log out and redirect to welcome page
-    await store.dispatch("logout");
-    next({ name: routes.welcome.name });
   } else {
     // if user not logged in already, redirect to welcome page
     if (!store.getters.userId) {

@@ -6,6 +6,7 @@ import {
   createRoutine,
   createUser,
   deleteRoutine,
+  deleteUser,
   updateUser,
 } from "../graphql/mutations";
 
@@ -35,7 +36,6 @@ export default new Vuex.Store({
       localStorage.removeItem(USER_ID_STORAGE_KEY);
       state.userId = null;
       state.user = null;
-      state.routines = [];
     },
   },
   getters: {
@@ -50,25 +50,42 @@ export default new Vuex.Store({
     },
   },
   actions: {
-    async logout({ commit }) {
+    logout({ commit }) {
       commit("resetState");
+      return Promise.resolve();
     },
-    async loadUser({ commit }, id) {
+    // #region user
+    reloadUser({ dispatch, getters }) {
+      return dispatch("loadUser", getters.userId);
+    },
+    loadUser({ commit }, id) {
       if (id) {
         return API.graphql(graphqlOperation(getUser, { id: id })).then(
           response => {
-            commit("setUser", response.data.getUser);
-            return response.data.getUser;
+            if (response.data.getUser) {
+              commit("setUser", response.data.getUser);
+              return Promise.resolve(response.data.getUser);
+            } else {
+              return Promise.reject({
+                status: 404,
+                message: "user not found for id " + id,
+              });
+            }
           },
         );
       } else {
-        return Promise.reject(`loadUser failed due to invalid input: id=${id}`);
+        return Promise.reject({
+          status: 400,
+          message: `loadUser failed due to invalid input: id=${id}`,
+        });
       }
     },
-    async updateUserName({ state, commit }, name) {
-      if (name && state.user) {
+    updateUserName({ commit, getters }, name) {
+      const id = getters.userId;
+
+      if (name && id) {
         const input = {
-          id: state.user.id,
+          id: id,
           name: name,
         };
         return API.graphql(graphqlOperation(updateUser, { input })).then(
@@ -78,12 +95,13 @@ export default new Vuex.Store({
           },
         );
       } else {
-        return Promise.reject(
-          `updateUserName failed due to invalid input: name=${name}, state.user=${state.user}`,
-        );
+        return Promise.reject({
+          status: 400,
+          message: `updateUserName failed due to invalid input: name=${name}, id=${id}`,
+        });
       }
     },
-    async createUser({ commit }, name) {
+    createUser({ commit }, name) {
       if (name) {
         const input = {
           name: name,
@@ -95,46 +113,82 @@ export default new Vuex.Store({
           },
         );
       } else {
-        return Promise.reject(
-          `createUser failed due to invalid input: name=${name}`,
-        );
+        return Promise.reject({
+          status: 400,
+          message: `createUser failed due to invalid input: name=${name}`,
+        });
       }
     },
-    async createRoutine({ dispatch }, data) {
-      if (data && data.name && data.userId) {
+    deleteUser({ dispatch, getters }) {
+      const id = getters.userId;
+      const routines = getters.routines;
+
+      if (id) {
+        const promises = routines
+          ? routines.map(
+              routine => dispatch("deleteRoutine", { id: routine.id }),
+              1,
+            )
+          : [];
+
+        return Promise.all(promises).then(() =>
+          API.graphql(graphqlOperation(deleteUser, { input: { id } })),
+        );
+      } else {
+        return Promise.reject({
+          status: 400,
+          message: `deleteUser failed due to invalid input: id=${id}`,
+        });
+      }
+    },
+    // #endregion
+    //#region routine
+    createRoutine({ dispatch, getters }, data) {
+      const userId = getters.userId;
+
+      if (data && data.name && userId) {
         const input = {
           name: data.name,
-          userID: data.userId,
+          userID: userId,
         };
-        return API.graphql(graphqlOperation(createRoutine, { input })).then(
-          async response => {
-            await dispatch("loadUser", data.userId);
-            return response.data.createRoutine;
-          },
-        );
+        const promise = API.graphql(
+          graphqlOperation(createRoutine, { input }),
+        ).then(response => response.data.createRoutine);
+
+        if (data.reloadUser) {
+          promise.then(() => dispatch("reloadUser"));
+        }
+        return promise;
       } else {
-        return Promise.reject(
-          `createRoutine failed due to invalid input: name=${data &&
-            data.name}, userId=${data && data.userId}`,
-        );
+        return Promise.reject({
+          status: 400,
+          message: `createRoutine failed due to invalid input: data=${JSON.stringify(
+            data,
+          )}, userId=${userId}`,
+        });
       }
     },
-    async deleteRoutine({ dispatch, state }, routine) {
-      if (routine && routine.id) {
-        const input = {
-          id: routine.id,
-        };
-        return API.graphql(graphqlOperation(deleteRoutine, { input })).then(
-          async () => {
-            await dispatch("loadUser", state.userId);
-          },
-        );
+    deleteRoutine({ dispatch }, data) {
+      if (data && data.id) {
+        const input = { id: data.id };
+        const promise = API.graphql(graphqlOperation(deleteRoutine, { input }));
+
+        // TODO: delete sessions
+
+        if (data.reloadUser) {
+          promise.then(() => dispatch("reloadUser"));
+        }
+        return promise;
       } else {
-        return Promise.reject(
-          `deleteRoutine failed due to invalid input: routine=${routine}`,
-        );
+        return Promise.reject({
+          status: 400,
+          message: `deleteRoutine failed due to invalid input: data=${JSON.stringify(
+            data,
+          )}`,
+        });
       }
     },
+    //#endregion
   },
   modules: {},
 });
