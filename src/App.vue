@@ -8,8 +8,17 @@
 
       <v-toolbar-title>Progressive Weight Training</v-toolbar-title>
     </v-app-bar>
-    <v-navigation-drawer v-if="userId" v-model="drawer" absolute temporary>
-      <v-container fluid>
+    <v-navigation-drawer v-if="userId" v-model="drawer" app temporary>
+      <v-container>
+        <v-list>
+          <v-list-item>
+            <v-list-item-content>
+              <v-list-item-title>
+                <h2>Where To?</h2>
+              </v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+        </v-list>
         <v-list nav dense>
           <v-list-item-group
             :value="currentSelectedNavItemIndex"
@@ -32,7 +41,7 @@
       </v-container>
     </v-navigation-drawer>
     <v-main>
-      <v-container fluid>
+      <v-container>
         <router-view class="body" />
       </v-container>
     </v-main>
