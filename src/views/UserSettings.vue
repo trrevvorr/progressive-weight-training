@@ -1,6 +1,6 @@
 <template>
   <div class="content">
-    <h1>User Details</h1>
+    <PageHeader>User Details</PageHeader>
 
     <v-card class="section">
       <v-card-title>User Details</v-card-title>
@@ -36,6 +36,7 @@
 <script>
 import NameField from "../components/NameField";
 import SubmitButton from "../components/SubmitButton";
+import PageHeader from "../components/PageHeader";
 import { mapActions, mapGetters } from "vuex";
 import routes from "../router/routes";
 
@@ -43,6 +44,7 @@ export default {
   components: {
     NameField,
     SubmitButton,
+    PageHeader,
   },
   props: {},
   data: function() {
@@ -81,7 +83,7 @@ export default {
 
 <style scoped>
 .section {
-  margin-top: 2rem;
+  margin-top: 1rem;
 }
 
 .id-warning {

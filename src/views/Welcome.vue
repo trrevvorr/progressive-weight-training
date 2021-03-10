@@ -1,6 +1,6 @@
 <template>
   <div class="content">
-    <h1>Welcome</h1>
+    <PageHeader>Welcome</PageHeader>
     <v-card class="section">
       <v-card-title>Login</v-card-title>
       <v-card-subtitle
@@ -57,6 +57,7 @@
 <script>
 import NameField from "../components/NameField";
 import SubmitButton from "../components/SubmitButton";
+import PageHeader from "../components/PageHeader";
 import routes from "../router/routes";
 import { mapActions, mapMutations, mapGetters } from "vuex";
 
@@ -64,6 +65,7 @@ export default {
   components: {
     NameField,
     SubmitButton,
+    PageHeader,
   },
   data: function() {
     return {
@@ -113,6 +115,6 @@ export default {
 
 <style scoped>
 .section {
-  margin-top: 2rem;
+  margin-top: 1rem;
 }
 </style>

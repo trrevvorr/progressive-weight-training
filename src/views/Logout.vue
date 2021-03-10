@@ -1,6 +1,6 @@
 <template>
   <div class="content">
-    <h1>Logout</h1>
+    <PageHeader>Logout</PageHeader>
 
     <v-card class="section">
       <v-card-title>Are You Sure?</v-card-title>
@@ -21,11 +21,14 @@
 <script>
 import { mapActions, mapGetters } from "vuex";
 import routes from "../router/routes";
+import PageHeader from "../components/PageHeader";
 
 const COPY_BUTTON_TEXT = "Copy ID";
 
 export default {
-  props: {},
+  components: {
+    PageHeader,
+  },
   data: function() {
     return {
       copyButtonText: COPY_BUTTON_TEXT,
@@ -62,6 +65,6 @@ export default {
 
 <style scoped>
 .section {
-  margin-top: 2rem;
+  margin-top: 1rem;
 }
 </style>

@@ -1,34 +1,8 @@
 <template>
   <div class="content">
-    <h1>Routines</h1>
+    <PageHeader>Routines</PageHeader>
 
-    <v-card class="section">
-      <v-card-title>New Routine</v-card-title>
-      <v-card-text>
-        <v-text-field
-          dense
-          maxlength="50"
-          label="Routine Name"
-          v-model="newRoutineName"
-        ></v-text-field>
-      </v-card-text>
-      <v-card-actions>
-        <SubmitButton
-          :onClick="tryCreateRoutine"
-          :onSuccess="() => (newRoutineName = null)"
-          :disabled="!newRoutineName"
-          errorMessage="Failed to create routine. Try again later."
-        >
-          Create Routine
-        </SubmitButton>
-      </v-card-actions>
-    </v-card>
-
-    <v-card
-      v-for="routine in sortedRoutines"
-      :key="routine.id"
-      class="section-mini"
-    >
+    <v-card v-for="routine in sortedRoutines" :key="routine.id" class="section">
       <v-card-title>{{ routine.name }}</v-card-title>
       <v-card-actions>
         <SubmitButton
@@ -40,20 +14,72 @@
         </SubmitButton>
       </v-card-actions>
     </v-card>
+
+    <v-dialog v-model="dialogOpen">
+      <template v-slot:activator="{ on, attrs }">
+        <v-btn
+          key="mdi-plus"
+          color="green"
+          fab
+          large
+          dark
+          bottom
+          right
+          fixed
+          v-bind="attrs"
+          v-on="on"
+        >
+          <v-icon>mdi-plus</v-icon>
+        </v-btn>
+      </template>
+
+      <v-card>
+        <v-card-title>New Routine</v-card-title>
+        <v-card-text>
+          <v-text-field
+            dense
+            maxlength="50"
+            label="Routine Name"
+            v-model="newRoutineName"
+          ></v-text-field>
+        </v-card-text>
+        <v-card-actions>
+          <SubmitButton
+            :onClick="tryCreateRoutine"
+            :onSuccess="
+              () => {
+                newRoutineName = null;
+                dialogOpen = false;
+              }
+            "
+            :disabled="!newRoutineName"
+            errorMessage="Failed to create routine. Try again later."
+          >
+            Create Routine
+          </SubmitButton>
+          <v-btn text @click="dialogOpen = false">
+            Cancel
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
 <script>
 import { mapActions, mapGetters } from "vuex";
 import SubmitButton from "../components/SubmitButton";
+import PageHeader from "../components/PageHeader";
 
 export default {
   components: {
     SubmitButton,
+    PageHeader,
   },
   data: function() {
     return {
       newRoutineName: null,
+      dialogOpen: false,
     };
   },
   created() {},
@@ -90,9 +116,6 @@ export default {
 
 <style scoped>
 .section {
-  margin-top: 2rem;
-}
-.section-mini {
   margin-top: 1rem;
 }
 </style>
