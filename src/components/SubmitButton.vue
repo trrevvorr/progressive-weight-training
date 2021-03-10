@@ -41,21 +41,26 @@ export default {
       this.loading = true;
       this.exception = false;
 
-      this.onClick()
-        .then(result => {
-          this.onSuccess && this.onSuccess(result);
-        })
-        .catch(exception => {
-          this.exception = true;
-          const isError = exception && Math.floor(exception.status / 100) === 4;
-          this.exceptionMessage = isError
-            ? this.errorMessage
-            : this.fatalMessage;
+      if (this.onClick) {
+        this.onClick()
+          .then(result => {
+            this.onSuccess && this.onSuccess(result);
+          })
+          .catch(exception => {
+            this.exception = true;
+            const isError =
+              exception && Math.floor(exception.status / 100) === 4;
+            this.exceptionMessage = isError
+              ? this.errorMessage
+              : this.fatalMessage;
 
-          console.error(exception);
-          this.onError && this.onError(exception);
-        })
-        .finally(() => (this.loading = false));
+            console.error(exception);
+            this.onError && this.onError(exception);
+          })
+          .finally(() => (this.loading = false));
+      } else {
+        this.$emit("click");
+      }
     },
   },
 };

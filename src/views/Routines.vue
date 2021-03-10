@@ -2,67 +2,65 @@
   <div class="content">
     <PageHeader>Routines</PageHeader>
 
-    <v-card v-for="routine in sortedRoutines" :key="routine.id" class="section">
-      <v-card-title>{{ routine.name }}</v-card-title>
-      <v-card-actions>
-        <SubmitButton
-          :onClick="() => tryDeleteRoutine(routine.id)"
-          buttonColor="error"
-          errorMessage="Failed to delete routine. Try again later."
-        >
-          Delete
-        </SubmitButton>
-      </v-card-actions>
-    </v-card>
-
-    <v-dialog v-model="dialogOpen">
-      <template v-slot:activator="{ on, attrs }">
-        <v-btn
-          key="mdi-plus"
-          color="green"
-          fab
-          large
-          dark
-          bottom
-          right
-          fixed
-          v-bind="attrs"
-          v-on="on"
-        >
-          <v-icon>mdi-plus</v-icon>
-        </v-btn>
-      </template>
-
-      <v-card>
-        <v-card-title>New Routine</v-card-title>
-        <v-card-text>
-          <v-text-field
-            dense
-            maxlength="50"
-            label="Routine Name"
-            v-model="newRoutineName"
-          ></v-text-field>
-        </v-card-text>
+    <div v-if="sortedRoutines.length">
+      <v-card
+        v-for="routine in sortedRoutines"
+        :key="routine.id"
+        class="section"
+      >
+        <v-card-title>{{ routine.name }}</v-card-title>
         <v-card-actions>
-          <SubmitButton
-            :onClick="tryCreateRoutine"
-            :onSuccess="
-              () => {
-                newRoutineName = null;
-                dialogOpen = false;
-              }
-            "
-            :disabled="!newRoutineName"
-            errorMessage="Failed to create routine. Try again later."
+          <v-btn
+            text
+            color="primary"
+            @click="editRoutine = JSON.parse(JSON.stringify(routine))"
           >
-            Create Routine
-          </SubmitButton>
-          <v-btn text @click="dialogOpen = false">
-            Cancel
+            Edit
           </v-btn>
+          <SubmitButton
+            :onClick="() => tryDeleteRoutine(routine.id)"
+            buttonColor="error"
+            errorMessage="Failed to delete routine. Try again later."
+          >
+            Delete
+          </SubmitButton>
         </v-card-actions>
       </v-card>
-    </v-dialog>
+    </div>
+    <v-row v-else class="no-routiens-message" justify="center">
+      <p class="text--secondary">
+        Click the "+" to create your first routine
+      </p>
+    </v-row>
+
+    <v-btn
+      key="mdi-plus"
+      color="green"
+      fab
+      large
+      dark
+      bottom
+      right
+      fixed
+      @click="() => (newRoutine = { name: null })"
+    >
+      <v-icon>mdi-plus</v-icon>
+    </v-btn>
+
+    <RoutineEditDialog
+      dialogTitle="Edit Routine"
+      v-model="editRoutine"
+      @submit="tryEditRoutine"
+      submitButtonLabel="Save"
+    >
+    </RoutineEditDialog>
+    <RoutineEditDialog
+      dialogTitle="New Routine"
+      v-model="newRoutine"
+      @submit="tryCreateRoutine"
+      submitButtonLabel="Create"
+    >
+    </RoutineEditDialog>
   </div>
 </template>
 
@@ -70,16 +68,20 @@
 import { mapActions, mapGetters } from "vuex";
 import SubmitButton from "../components/SubmitButton";
 import PageHeader from "../components/PageHeader";
+import RoutineEditDialog from "../components/RoutineEditDialog";
 
 export default {
   components: {
     SubmitButton,
     PageHeader,
+    RoutineEditDialog,
   },
   data: function() {
     return {
-      newRoutineName: null,
-      dialogOpen: false,
+      newRoutine: null,
+      editRoutine: null,
+      editRoutineName: null,
+      editRoutineDialogOpen: false,
     };
   },
   created() {},
@@ -99,16 +101,31 @@ export default {
       });
     },
   },
+  watch: {
+    editRoutine: function(newEditRoutine) {
+      this.editRoutineName = newEditRoutine && newEditRoutine.name;
+      this.editRoutineDialogOpen = Boolean(newEditRoutine);
+    },
+    editRoutineDialogOpen: function(newEditRoutineDialogOpen) {
+      if (!newEditRoutineDialogOpen) {
+        this.editRoutine = null;
+      }
+    },
+  },
   methods: {
-    ...mapActions(["createRoutine", "deleteRoutine"]),
+    ...mapActions(["createRoutine", "deleteRoutine", "updateRoutineName"]),
     tryCreateRoutine() {
       return this.createRoutine({
-        name: this.newRoutineName,
-        reloadUser: true,
-      });
+        name: this.newRoutine.name,
+      }).then((this.newRoutine = null));
+    },
+    tryEditRoutine() {
+      return this.updateRoutineName(this.editRoutine).then(
+        () => (this.editRoutine = null),
+      );
     },
     tryDeleteRoutine(id) {
-      return this.deleteRoutine({ id, reloadUser: true });
+      return this.deleteRoutine({ id });
     },
   },
 };
@@ -117,5 +134,11 @@ export default {
 <style scoped>
 .section {
   margin-top: 1rem;
+}
+
+.no-routiens-message {
+  position: absolute;
+  top: 50%;
+  width: 100%;
 }
 </style>

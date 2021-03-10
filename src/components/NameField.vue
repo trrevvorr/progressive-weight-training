@@ -2,9 +2,9 @@
   <v-text-field
     counter
     dense
-    maxlength="20"
+    maxlength="40"
     :rules="[rules.nameIsPlainText]"
-    label="Name"
+    :label="label"
     v-model="currentValue"
   ></v-text-field>
 </template>
@@ -13,6 +13,10 @@
 export default {
   props: {
     value: String,
+    label: {
+      type: String,
+      default: "Name",
+    },
   },
   data: function() {
     return {

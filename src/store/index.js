@@ -7,6 +7,7 @@ import {
   createUser,
   deleteRoutine,
   deleteUser,
+  updateRoutine,
   updateUser,
 } from "../graphql/mutations";
 
@@ -31,6 +32,19 @@ export default new Vuex.Store({
       localStorage.setItem(USER_ID_STORAGE_KEY, model.id);
       state.userId = model.id;
       state.user = model;
+    },
+    updateRoutineOnUser(state, updatedRoutine) {
+      state.user.Routines.items = state.user.Routines.items.map(routine =>
+        routine.id === updatedRoutine.id ? updatedRoutine : routine,
+      );
+    },
+    deleteRoutineOnUser(state, deletedRoutine) {
+      state.user.Routines.items = state.user.Routines.items.filter(
+        routine => routine.id !== deletedRoutine.id,
+      );
+    },
+    createRoutineOnUser(state, newRoutine) {
+      state.user.Routines.items = [...state.user.Routines.items, newRoutine];
     },
     resetState(state) {
       localStorage.removeItem(USER_ID_STORAGE_KEY);
@@ -143,7 +157,7 @@ export default new Vuex.Store({
     },
     // #endregion
     //#region routine
-    createRoutine({ dispatch, getters }, data) {
+    createRoutine({ commit, getters }, data) {
       const userId = getters.userId;
 
       if (data && data.name && userId) {
@@ -151,14 +165,14 @@ export default new Vuex.Store({
           name: data.name,
           userID: userId,
         };
-        const promise = API.graphql(
-          graphqlOperation(createRoutine, { input }),
-        ).then(response => response.data.createRoutine);
-
-        if (data.reloadUser) {
-          promise.then(() => dispatch("reloadUser"));
-        }
-        return promise;
+        return API.graphql(graphqlOperation(createRoutine, { input })).then(
+          response => {
+            if (response.data.createRoutine) {
+              commit("createRoutineOnUser", response.data.createRoutine);
+            }
+            return response.data.createRoutine;
+          },
+        );
       } else {
         return Promise.reject({
           status: 400,
@@ -168,22 +182,45 @@ export default new Vuex.Store({
         });
       }
     },
-    deleteRoutine({ dispatch }, data) {
-      if (data && data.id) {
-        const input = { id: data.id };
-        const promise = API.graphql(graphqlOperation(deleteRoutine, { input }));
-
-        // TODO: delete sessions
-
-        if (data.reloadUser) {
-          promise.then(() => dispatch("reloadUser"));
-        }
-        return promise;
+    updateRoutineName({ commit }, routine) {
+      if (routine && routine.name && routine.id) {
+        const input = {
+          id: routine.id,
+          name: routine.name,
+        };
+        return API.graphql(graphqlOperation(updateRoutine, { input })).then(
+          response => {
+            if (response.data.updateRoutine) {
+              commit("updateRoutineOnUser", response.data.updateRoutine);
+            }
+            return response.data.updateRoutine;
+          },
+        );
       } else {
         return Promise.reject({
           status: 400,
-          message: `deleteRoutine failed due to invalid input: data=${JSON.stringify(
-            data,
+          message: `updateRoutineName failed due to invalid input: routine=${JSON.stringify(
+            routine,
+          )}`,
+        });
+      }
+    },
+    deleteRoutine({ commit }, routine) {
+      if (routine && routine.id) {
+        const input = { id: routine.id };
+        return API.graphql(graphqlOperation(deleteRoutine, { input })).then(
+          response => {
+            if (response.data.deleteRoutine) {
+              commit("deleteRoutineOnUser", response.data.deleteRoutine);
+            }
+            return response.data.deleteRoutine;
+          },
+        );
+      } else {
+        return Promise.reject({
+          status: 400,
+          message: `deleteRoutine failed due to invalid input: routine=${JSON.stringify(
+            routine,
           )}`,
         });
       }
