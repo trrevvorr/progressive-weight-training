@@ -1,7 +1,8 @@
 import Welcome from "../views/Welcome.vue";
 import User from "../views/User.vue";
 import UserSettings from "../views/UserSettings.vue";
-import Routine from "../views/Routines";
+import Routines from "../views/Routines";
+import Sessions from "../views/Sessions";
 import Logout from "../views/Logout";
 
 export default {
@@ -28,6 +29,11 @@ export default {
   routines: {
     path: "routines",
     name: "Routines",
-    component: Routine,
+    component: Routines,
+  },
+  sessions: {
+    path: "sessions",
+    name: "Sessions",
+    component: Sessions,
   },
 };

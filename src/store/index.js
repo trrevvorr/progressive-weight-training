@@ -4,10 +4,13 @@ import { API, graphqlOperation } from "aws-amplify";
 import { getUser } from "../graphql/queries";
 import {
   createRoutine,
+  createSession,
   createUser,
   deleteRoutine,
+  deleteSession,
   deleteUser,
   updateRoutine,
+  updateSession,
   updateUser,
 } from "../graphql/mutations";
 
@@ -19,6 +22,7 @@ export default new Vuex.Store({
   state: {
     userId: null,
     user: null,
+    routineId: null,
   },
   mutations: {
     setUserId(state, id) {
@@ -33,6 +37,9 @@ export default new Vuex.Store({
       state.userId = model.id;
       state.user = model;
     },
+    setRoutineId(state, id) {
+      state.routineId = id;
+    },
     updateRoutineOnUser(state, updatedRoutine) {
       state.user.Routines.items = state.user.Routines.items.map(routine =>
         routine.id === updatedRoutine.id ? updatedRoutine : routine,
@@ -46,10 +53,54 @@ export default new Vuex.Store({
     createRoutineOnUser(state, newRoutine) {
       state.user.Routines.items = [...state.user.Routines.items, newRoutine];
     },
+    updateSessionOnRoutine(state, updatedSession) {
+      state.user.Routines.items = state.user.Routines.items.map(routine =>
+        routine.id === state.routineId
+          ? {
+              ...routine,
+              Sessions: {
+                ...routine.Sessions,
+                items: routine.Sessions.items.map(session =>
+                  session.id === updatedSession.id ? updatedSession : session,
+                ),
+              },
+            }
+          : routine,
+      );
+    },
+    deleteSessionOnRoutine(state, deletedSession) {
+      state.user.Routines.items = state.user.Routines.items.map(routine =>
+        routine.id === state.routineId
+          ? {
+              ...routine,
+              Sessions: {
+                ...routine.Sessions,
+                items: routine.Sessions.items.filter(
+                  session => session.id !== deletedSession.id,
+                ),
+              },
+            }
+          : routine,
+      );
+    },
+    createSessionOnRoutine(state, newSession) {
+      state.user.Routines.items = state.user.Routines.items.map(routine =>
+        routine.id === state.routineId
+          ? {
+              ...routine,
+              Sessions: {
+                ...routine.Sessions,
+                items: [...routine.Sessions.items, newSession],
+              },
+            }
+          : routine,
+      );
+    },
     resetState(state) {
-      localStorage.removeItem(USER_ID_STORAGE_KEY);
-      state.userId = null;
+      state.routine = null;
       state.user = null;
+      state.userId = null;
+      localStorage.removeItem(USER_ID_STORAGE_KEY);
     },
   },
   getters: {
@@ -59,8 +110,26 @@ export default new Vuex.Store({
     userName: state => {
       return state.user && state.user.name;
     },
+    user: state => {
+      return state.user;
+    },
     routines: state => {
       return state.user && state.user.Routines && state.user.Routines.items;
+    },
+    routineId: state => {
+      return state.routineId;
+    },
+    sessions: state => {
+      const routine =
+        state.user &&
+        state.routineId &&
+        state.user.Routines &&
+        state.user.Routines.items &&
+        state.user.Routines.items.find(
+          routine => routine.id === state.routineId,
+        );
+
+      return routine && routine.Sessions.items;
     },
   },
   actions: {
@@ -135,15 +204,12 @@ export default new Vuex.Store({
     },
     deleteUser({ dispatch, getters }) {
       const id = getters.userId;
-      const routines = getters.routines;
+      const user = getters.user;
 
-      if (id) {
-        const promises = routines
-          ? routines.map(
-              routine => dispatch("deleteRoutine", { id: routine.id }),
-              1,
-            )
-          : [];
+      if (id && user) {
+        const promises = user.Routines.items.map(routine =>
+          dispatch("deleteRoutine", routine.id),
+        );
 
         return Promise.all(promises).then(() =>
           API.graphql(graphqlOperation(deleteUser, { input: { id } })),
@@ -157,12 +223,12 @@ export default new Vuex.Store({
     },
     // #endregion
     //#region routine
-    createRoutine({ commit, getters }, data) {
+    createRoutine({ commit, getters }, routine) {
       const userId = getters.userId;
 
-      if (data && data.name && userId) {
+      if (routine && routine.name && userId) {
         const input = {
-          name: data.name,
+          name: routine.name,
           userID: userId,
         };
         return API.graphql(graphqlOperation(createRoutine, { input })).then(
@@ -176,8 +242,8 @@ export default new Vuex.Store({
       } else {
         return Promise.reject({
           status: 400,
-          message: `createRoutine failed due to invalid input: data=${JSON.stringify(
-            data,
+          message: `createRoutine failed due to invalid input: routine=${JSON.stringify(
+            routine,
           )}, userId=${userId}`,
         });
       }
@@ -205,22 +271,101 @@ export default new Vuex.Store({
         });
       }
     },
-    deleteRoutine({ commit }, routine) {
-      if (routine && routine.id) {
-        const input = { id: routine.id };
-        return API.graphql(graphqlOperation(deleteRoutine, { input })).then(
-          response => {
+    deleteRoutine({ dispatch, commit, getters }, id) {
+      const routine =
+        getters.routines && getters.routines.find(routine => routine.id === id);
+
+      if (routine) {
+        const promises = routine.Sessions.items.map(session =>
+          dispatch("deleteSession", session.id),
+        );
+
+        const input = { id };
+        return Promise.all(promises)
+          .then(() => API.graphql(graphqlOperation(deleteRoutine, { input })))
+          .then(response => {
             if (response.data.deleteRoutine) {
               commit("deleteRoutineOnUser", response.data.deleteRoutine);
             }
             return response.data.deleteRoutine;
+          });
+      } else {
+        return Promise.reject({
+          status: 400,
+          message: `deleteRoutine failed due to invalid input: id=${JSON.stringify(
+            id,
+          )}`,
+        });
+      }
+    },
+    //#endregion
+    //#region session
+    createSession({ commit, getters }, session) {
+      const routineId = getters.routineId;
+
+      if (routineId && session && session.name) {
+        const input = {
+          name: session.name,
+          routineID: routineId,
+        };
+        return API.graphql(graphqlOperation(createSession, { input })).then(
+          response => {
+            if (response.data.createSession) {
+              commit("createSessionOnRoutine", response.data.createSession);
+            }
+            return response.data.createSession;
           },
         );
       } else {
         return Promise.reject({
           status: 400,
-          message: `deleteRoutine failed due to invalid input: routine=${JSON.stringify(
-            routine,
+          message: `createSession failed due to invalid input: session=${JSON.stringify(
+            session,
+          )}, routineId=${routineId}`,
+        });
+      }
+    },
+    updateSessionName({ commit, getters }, session) {
+      const routineId = getters.routineId;
+
+      if (routineId && session && session.name && session.id) {
+        const input = {
+          id: session.id,
+          name: session.name,
+        };
+        return API.graphql(graphqlOperation(updateSession, { input })).then(
+          response => {
+            if (response.data.updateSession) {
+              commit("updateSessionOnRoutine", response.data.updateSession);
+            }
+            return response.data.updateSession;
+          },
+        );
+      } else {
+        return Promise.reject({
+          status: 400,
+          message: `updateSessionName failed due to invalid input: session=${JSON.stringify(
+            session,
+          )}, routineId=${routineId}`,
+        });
+      }
+    },
+    deleteSession({ commit }, id) {
+      if (id) {
+        const input = { id };
+        return API.graphql(graphqlOperation(deleteSession, { input })).then(
+          response => {
+            if (response.data.deleteSession) {
+              commit("deleteSessionOnRoutine", response.data.deleteSession);
+            }
+            return response.data.deleteSession;
+          },
+        );
+      } else {
+        return Promise.reject({
+          status: 400,
+          message: `deleteSession failed due to invalid input: id=${JSON.stringify(
+            id,
           )}`,
         });
       }

@@ -8,11 +8,12 @@
     <v-card v-if="currentValue">
       <v-card-title>{{ dialogTitle }}</v-card-title>
       <v-card-text>
-        <v-form v-model="formValid">
+        <v-form v-model="formValid" @:submit.prevent="() => $emit('submit')">
           <NameField v-model="currentValue.name" />
         </v-form>
       </v-card-text>
       <v-card-actions>
+        <!-- TODO: how to use @click but also handle errors displayed? -->
         <SubmitButton
           @click="() => $emit('submit')"
           :disabled="!formValid || !currentValue.name"

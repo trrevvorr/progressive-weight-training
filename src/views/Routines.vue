@@ -7,23 +7,26 @@
         v-for="routine in sortedRoutines"
         :key="routine.id"
         class="section"
+        @click="selectRoutine(routine.id)"
       >
-        <v-card-title>{{ routine.name }}</v-card-title>
+        <v-card-title class="card-title">{{ routine.name }}</v-card-title>
         <v-card-actions>
           <v-btn
             text
             color="primary"
-            @click="editRoutine = JSON.parse(JSON.stringify(routine))"
+            @click.stop="editRoutine = JSON.parse(JSON.stringify(routine))"
           >
             Edit
           </v-btn>
-          <SubmitButton
-            :onClick="() => tryDeleteRoutine(routine.id)"
-            buttonColor="error"
-            errorMessage="Failed to delete routine. Try again later."
-          >
-            Delete
-          </SubmitButton>
+          <div @click.stop>
+            <SubmitButton
+              :onClick="() => tryDeleteRoutine(routine.id)"
+              buttonColor="error"
+              errorMessage="Failed to delete routine. Try again later."
+            >
+              Delete
+            </SubmitButton>
+          </div>
         </v-card-actions>
       </v-card>
     </div>
@@ -65,10 +68,11 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from "vuex";
+import { mapActions, mapGetters, mapMutations } from "vuex";
 import SubmitButton from "../components/SubmitButton";
 import PageHeader from "../components/PageHeader";
 import RoutineEditDialog from "../components/RoutineEditDialog";
+import routes from "../router/routes";
 
 export default {
   components: {
@@ -114,6 +118,7 @@ export default {
   },
   methods: {
     ...mapActions(["createRoutine", "deleteRoutine", "updateRoutineName"]),
+    ...mapMutations(["setRoutineId"]),
     tryCreateRoutine() {
       return this.createRoutine({
         name: this.newRoutine.name,
@@ -125,7 +130,11 @@ export default {
       );
     },
     tryDeleteRoutine(id) {
-      return this.deleteRoutine({ id });
+      return this.deleteRoutine(id);
+    },
+    selectRoutine(id) {
+      this.setRoutineId(id);
+      this.$router.push({ name: routes.sessions.name });
     },
   },
 };
@@ -134,6 +143,10 @@ export default {
 <style scoped>
 .section {
   margin-top: 1rem;
+}
+
+.card-title {
+  word-break: break-word;
 }
 
 .no-routiens-message {

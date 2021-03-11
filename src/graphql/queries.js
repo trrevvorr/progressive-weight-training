@@ -7,7 +7,6 @@ export const getExercise = /* GraphQL */ `
       id
       name
       sessionID
-      userID
       createdAt
       updatedAt
     }
@@ -24,7 +23,6 @@ export const listExercises = /* GraphQL */ `
         id
         name
         sessionID
-        userID
         createdAt
         updatedAt
       }
@@ -38,7 +36,6 @@ export const getSession = /* GraphQL */ `
       id
       name
       routineID
-      userID
       createdAt
       updatedAt
       Exercises {
@@ -46,7 +43,6 @@ export const getSession = /* GraphQL */ `
           id
           name
           sessionID
-          userID
           createdAt
           updatedAt
         }
@@ -66,7 +62,6 @@ export const listSessions = /* GraphQL */ `
         id
         name
         routineID
-        userID
         createdAt
         updatedAt
         Exercises {
@@ -74,7 +69,6 @@ export const listSessions = /* GraphQL */ `
             id
             name
             sessionID
-            userID
             createdAt
             updatedAt
           }
@@ -98,10 +92,16 @@ export const getRoutine = /* GraphQL */ `
           id
           name
           routineID
-          userID
           createdAt
           updatedAt
           Exercises {
+            items {
+              id
+              name
+              sessionID
+              createdAt
+              updatedAt
+            }
             nextToken
           }
         }
@@ -128,9 +128,18 @@ export const listRoutines = /* GraphQL */ `
             id
             name
             routineID
-            userID
             createdAt
             updatedAt
+            Exercises {
+              items {
+                id
+                name
+                sessionID
+                createdAt
+                updatedAt
+              }
+              nextToken
+            }
           }
           nextToken
         }
@@ -146,31 +155,6 @@ export const getUser = /* GraphQL */ `
       name
       createdAt
       updatedAt
-      Exercises {
-        items {
-          id
-          name
-          sessionID
-          userID
-          createdAt
-          updatedAt
-        }
-        nextToken
-      }
-      Sessions {
-        items {
-          id
-          name
-          routineID
-          userID
-          createdAt
-          updatedAt
-          Exercises {
-            nextToken
-          }
-        }
-        nextToken
-      }
       Routines {
         items {
           id
@@ -179,6 +163,16 @@ export const getUser = /* GraphQL */ `
           createdAt
           updatedAt
           Sessions {
+            items {
+              id
+              name
+              routineID
+              createdAt
+              updatedAt
+              Exercises {
+                nextToken
+              }
+            }
             nextToken
           }
         }
@@ -199,28 +193,6 @@ export const listUsers = /* GraphQL */ `
         name
         createdAt
         updatedAt
-        Exercises {
-          items {
-            id
-            name
-            sessionID
-            userID
-            createdAt
-            updatedAt
-          }
-          nextToken
-        }
-        Sessions {
-          items {
-            id
-            name
-            routineID
-            userID
-            createdAt
-            updatedAt
-          }
-          nextToken
-        }
         Routines {
           items {
             id
@@ -228,6 +200,16 @@ export const listUsers = /* GraphQL */ `
             userID
             createdAt
             updatedAt
+            Sessions {
+              items {
+                id
+                name
+                routineID
+                createdAt
+                updatedAt
+              }
+              nextToken
+            }
           }
           nextToken
         }
