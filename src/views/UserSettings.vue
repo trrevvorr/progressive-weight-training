@@ -12,14 +12,6 @@
       </v-card-text>
       <v-card-actions>
         <SubmitButton
-          :onClick="tryUpdateName"
-          :disabled="!userName || !nameFormValid"
-          errorMessage="Invalid name"
-          fatalMessage="Failed to change name. Try again later."
-        >
-          Save Changes
-        </SubmitButton>
-        <SubmitButton
           :onClick="tryDeleteUser"
           :onSuccess="logOut"
           :buttonColor="'error'"
@@ -27,6 +19,14 @@
           fatalMessage="Failed to delete user. Try again later."
         >
           Delete User
+        </SubmitButton>
+        <SubmitButton
+          :onClick="tryUpdateName"
+          :disabled="!userName || !nameFormValid"
+          errorMessage="Invalid name"
+          fatalMessage="Failed to change name. Try again later."
+        >
+          Save Changes
         </SubmitButton>
       </v-card-actions>
     </v-card>

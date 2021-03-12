@@ -26,7 +26,7 @@
             mandatory
             color="primary"
           >
-            <v-list-item link v-for="item in navItems" :key="item.text">
+            <v-list-item link v-for="(item, index) in navItems" :key="index">
               <v-list-item-icon>
                 <v-icon>{{ item.icon }}</v-icon>
               </v-list-item-icon>
@@ -56,7 +56,14 @@ export default {
   name: "App",
   data: function() {
     return {
-      navItems: [
+      drawer: false,
+    };
+  },
+  watch: {},
+  computed: {
+    ...mapGetters(["userId", "routine"]),
+    navItems() {
+      const items = [
         {
           text: "Routines",
           routeName: routes.routines.name,
@@ -68,13 +75,18 @@ export default {
           icon: "mdi-cog",
         },
         { text: "Logout", routeName: routes.logout.name, icon: "mdi-logout" },
-      ],
-      drawer: false,
-    };
-  },
-  watch: {},
-  computed: {
-    ...mapGetters(["userId"]),
+      ];
+
+      if (this.routine) {
+        items.unshift({
+          text: this.routine.name,
+          routeName: routes.sessions.name,
+          icon: "mdi-format-list-bulleted-type",
+        });
+      }
+
+      return items;
+    },
     currentSelectedNavItemIndex() {
       const index = this.navItems
         .map(item => item.routeName)

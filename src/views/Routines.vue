@@ -11,13 +11,6 @@
       >
         <v-card-title class="card-title">{{ routine.name }}</v-card-title>
         <v-card-actions>
-          <v-btn
-            text
-            color="primary"
-            @click.stop="editRoutine = JSON.parse(JSON.stringify(routine))"
-          >
-            Edit
-          </v-btn>
           <div @click.stop>
             <SubmitButton
               :onClick="() => tryDeleteRoutine(routine.id)"
@@ -27,6 +20,13 @@
               Delete
             </SubmitButton>
           </div>
+          <v-btn
+            text
+            color="primary"
+            @click.stop="editRoutine = JSON.parse(JSON.stringify(routine))"
+          >
+            Edit
+          </v-btn>
         </v-card-actions>
       </v-card>
     </div>
@@ -50,20 +50,20 @@
       <v-icon>mdi-plus</v-icon>
     </v-btn>
 
-    <RoutineEditDialog
+    <EditDialog
       dialogTitle="Edit Routine"
       v-model="editRoutine"
       @submit="tryEditRoutine"
       submitButtonLabel="Save"
     >
-    </RoutineEditDialog>
-    <RoutineEditDialog
+    </EditDialog>
+    <EditDialog
       dialogTitle="New Routine"
       v-model="newRoutine"
       @submit="tryCreateRoutine"
       submitButtonLabel="Create"
     >
-    </RoutineEditDialog>
+    </EditDialog>
   </div>
 </template>
 
@@ -71,14 +71,14 @@
 import { mapActions, mapGetters, mapMutations } from "vuex";
 import SubmitButton from "../components/SubmitButton";
 import PageHeader from "../components/PageHeader";
-import RoutineEditDialog from "../components/RoutineEditDialog";
+import EditDialog from "../components/EditDialog";
 import routes from "../router/routes";
 
 export default {
   components: {
     SubmitButton,
     PageHeader,
-    RoutineEditDialog,
+    EditDialog,
   },
   data: function() {
     return {

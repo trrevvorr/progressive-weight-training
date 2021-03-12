@@ -119,6 +119,16 @@ export default new Vuex.Store({
     routineId: state => {
       return state.routineId;
     },
+    routine: state => {
+      return (
+        state.routineId &&
+        state.user &&
+        state.user.Routines &&
+        state.user.Routines.items.find(
+          routine => routine.id === state.routineId,
+        )
+      );
+    },
     sessions: state => {
       const routine =
         state.user &&

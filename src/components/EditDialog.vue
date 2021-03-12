@@ -13,6 +13,9 @@
         </v-form>
       </v-card-text>
       <v-card-actions>
+        <v-btn text @click="currentValue = null">
+          Cancel
+        </v-btn>
         <!-- TODO: how to use @click but also handle errors displayed? -->
         <SubmitButton
           @click="() => $emit('submit')"
@@ -22,9 +25,6 @@
         >
           {{ submitButtonLabel }}
         </SubmitButton>
-        <v-btn text @click="currentValue = null">
-          Cancel
-        </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>

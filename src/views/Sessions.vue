@@ -1,6 +1,6 @@
 <template>
   <div class="content">
-    <PageHeader>Sessions</PageHeader>
+    <PageHeader>{{ this.routine.name }}</PageHeader>
 
     <div v-if="sortedSessions.length">
       <v-card
@@ -50,20 +50,20 @@
       <v-icon>mdi-plus</v-icon>
     </v-btn>
 
-    <RoutineEditDialog
+    <EditDialog
       dialogTitle="Edit Session"
       v-model="editSession"
       @submit="tryEditSession"
       submitButtonLabel="Save"
     >
-    </RoutineEditDialog>
-    <RoutineEditDialog
+    </EditDialog>
+    <EditDialog
       dialogTitle="New Session"
       v-model="newSession"
       @submit="tryCreateSession"
       submitButtonLabel="Create"
     >
-    </RoutineEditDialog>
+    </EditDialog>
   </div>
 </template>
 
@@ -71,13 +71,13 @@
 import { mapActions, mapGetters } from "vuex";
 import SubmitButton from "../components/SubmitButton";
 import PageHeader from "../components/PageHeader";
-import RoutineEditDialog from "../components/RoutineEditDialog";
+import EditDialog from "../components/EditDialog";
 
 export default {
   components: {
     SubmitButton,
     PageHeader,
-    RoutineEditDialog,
+    EditDialog,
   },
   data: function() {
     return {
@@ -89,7 +89,7 @@ export default {
   },
   created() {},
   computed: {
-    ...mapGetters(["userId", "routineId", "sessions"]),
+    ...mapGetters(["userId", "sessions", "routine"]),
     sortedSessions() {
       return [...this.sessions].sort((a, b) => {
         var nameA = a.name.toUpperCase();
