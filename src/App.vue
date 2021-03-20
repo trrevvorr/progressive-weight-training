@@ -90,7 +90,10 @@ export default {
         items.unshift({
           text: this.session.name,
           routeName: routes.exercises.name,
-          routeParams: { sessionId: this.session.id },
+          routeParams: {
+            routineId: this.routine.id,
+            sessionId: this.session.id,
+          },
           icon: "mdi-dumbbell",
         });
       }
@@ -99,7 +102,11 @@ export default {
         items.unshift({
           text: this.exercise.name,
           routeName: routes.exercise.name,
-          routeParams: { exerciseId: this.exercise.id },
+          routeParams: {
+            routineId: this.routine.id,
+            sessionId: this.session.id,
+            exerciseId: this.exercise.id,
+          },
           icon: "mdi-numeric",
         });
       }
