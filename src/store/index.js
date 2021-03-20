@@ -141,7 +141,7 @@ export default new Vuex.Store({
               ...routine,
               Sessions: {
                 ...routine.Sessions,
-                items: routine.Sessions.items.filter(session =>
+                items: routine.Sessions.items.map(session =>
                   session.id === state.sessionId
                     ? {
                         ...session,

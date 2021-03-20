@@ -11,16 +11,8 @@
       >
         <v-card-title class="card-title">{{ session.name }}</v-card-title>
         <v-card-actions>
-          <v-btn
-            text
-            color="primary"
-            @click.stop="editSession = JSON.parse(JSON.stringify(session))"
-          >
-            Edit
-          </v-btn>
           <div @click.stop>
             <SubmitButton
-              @click.stop
               :onClick="() => tryDeleteSession(session.id)"
               buttonColor="error"
               errorMessage="Failed to delete session. Try again later."
@@ -28,6 +20,13 @@
               Delete
             </SubmitButton>
           </div>
+          <v-btn
+            text
+            color="primary"
+            @click.stop="editSession = JSON.parse(JSON.stringify(session))"
+          >
+            Edit
+          </v-btn>
         </v-card-actions>
       </v-card>
     </div>

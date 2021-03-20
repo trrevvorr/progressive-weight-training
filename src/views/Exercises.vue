@@ -11,16 +11,8 @@
       >
         <v-card-title class="card-title">{{ exercise.name }}</v-card-title>
         <v-card-actions>
-          <v-btn
-            text
-            color="primary"
-            @click.stop="editExercise = JSON.parse(JSON.stringify(exercise))"
-          >
-            Edit
-          </v-btn>
           <div @click.stop>
             <SubmitButton
-              @click.stop
               :onClick="() => tryDeleteExercise(exercise.id)"
               buttonColor="error"
               errorMessage="Failed to delete exercise. Try again later."
@@ -28,6 +20,13 @@
               Delete
             </SubmitButton>
           </div>
+          <v-btn
+            text
+            color="primary"
+            @click.stop="editExercise = JSON.parse(JSON.stringify(exercise))"
+          >
+            Edit
+          </v-btn>
         </v-card-actions>
       </v-card>
     </div>
