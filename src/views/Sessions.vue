@@ -74,6 +74,9 @@ import PageHeader from "../components/PageHeader";
 import EditDialog from "../components/EditDialog";
 
 export default {
+  props: {
+    routine: Object,
+  },
   components: {
     SubmitButton,
     PageHeader,
@@ -87,9 +90,8 @@ export default {
       editSessionDialogOpen: false,
     };
   },
-  created() {},
   computed: {
-    ...mapGetters(["userId", "sessions", "routine"]),
+    ...mapGetters(["userId", "sessions"]),
     sortedSessions() {
       return [...this.sessions].sort((a, b) => {
         var nameA = a.name.toUpperCase();

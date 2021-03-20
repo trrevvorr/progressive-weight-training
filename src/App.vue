@@ -81,6 +81,7 @@ export default {
         items.unshift({
           text: this.routine.name,
           routeName: routes.sessions.name,
+          routeParams: { routineId: this.routine.id },
           icon: "mdi-format-list-bulleted-type",
         });
       }
@@ -97,11 +98,12 @@ export default {
   methods: {
     selectNavItem: function(selectedIndex) {
       const toRouteName = this.navItems[selectedIndex].routeName;
+      const toRouteParams = this.navItems[selectedIndex].routeParams;
 
       const wasDrawerOpen = this.drawer;
       this.drawer = false;
       if (wasDrawerOpen && this.$route.name !== toRouteName) {
-        this.$router.push({ name: toRouteName });
+        this.$router.push({ name: toRouteName, params: toRouteParams });
       }
     },
   },

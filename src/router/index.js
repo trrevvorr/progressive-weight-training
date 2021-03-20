@@ -14,9 +14,30 @@ const router = new VueRouter({
       children: [
         routes.userSettings,
         routes.routines,
-        routes.sessions,
+        {
+          ...routes.routine,
+          children: [
+            routes.sessions,
+            {
+              ...routes.sessions,
+              name: null,
+              path: "",
+            },
+            {
+              ...routes.sessions,
+              name: null,
+              path: "*",
+            },
+          ],
+        },
         {
           ...routes.routines,
+          name: null,
+          path: "*",
+        },
+        {
+          ...routes.routines,
+          name: null,
           path: "",
         },
       ],
@@ -36,15 +57,7 @@ router.beforeEach(async (to, from, next) => {
     if (!store.getters.userId) {
       next({ name: routes.welcome.name }); // reject routing anywhere but welcome page when not logged in
     } else {
-      if (to.name === routes.sessions.name) {
-        if (!store.getters.routineId) {
-          next({ name: routes.routines.name }); // reject routing to sessions page without routine selected
-        } else {
-          next();
-        }
-      } else {
-        next();
-      }
+      next();
     }
   }
 });

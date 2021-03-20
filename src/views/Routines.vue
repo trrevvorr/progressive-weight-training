@@ -133,8 +133,10 @@ export default {
       return this.deleteRoutine(id);
     },
     selectRoutine(id) {
-      this.setRoutineId(id);
-      this.$router.push({ name: routes.sessions.name });
+      this.$router.push({
+        name: routes.sessions.name,
+        params: { routineId: id },
+      });
     },
   },
 };
