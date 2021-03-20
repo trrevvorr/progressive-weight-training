@@ -19,6 +19,23 @@ const router = new VueRouter({
           children: [
             routes.sessions,
             {
+              ...routes.session,
+              children: [
+                routes.exercises,
+                routes.exercise,
+                {
+                  ...routes.exercises,
+                  name: null,
+                  path: "",
+                },
+                {
+                  ...routes.exercises,
+                  name: null,
+                  path: "*",
+                },
+              ],
+            },
+            {
               ...routes.sessions,
               name: null,
               path: "",

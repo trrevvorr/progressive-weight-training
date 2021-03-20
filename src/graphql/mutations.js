@@ -242,6 +242,13 @@ export const createUser = /* GraphQL */ `
               createdAt
               updatedAt
               Exercises {
+                items {
+                  id
+                  name
+                  sessionID
+                  createdAt
+                  updatedAt
+                }
                 nextToken
               }
             }
@@ -278,6 +285,13 @@ export const updateUser = /* GraphQL */ `
               createdAt
               updatedAt
               Exercises {
+                items {
+                  id
+                  name
+                  sessionID
+                  createdAt
+                  updatedAt
+                }
                 nextToken
               }
             }
@@ -314,6 +328,13 @@ export const deleteUser = /* GraphQL */ `
               createdAt
               updatedAt
               Exercises {
+                items {
+                  id
+                  name
+                  sessionID
+                  createdAt
+                  updatedAt
+                }
                 nextToken
               }
             }

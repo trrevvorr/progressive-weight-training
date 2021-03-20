@@ -61,13 +61,13 @@ export default {
   },
   watch: {},
   computed: {
-    ...mapGetters(["userId", "routine"]),
+    ...mapGetters(["userId", "routine", "session", "exercise"]),
     navItems() {
       const items = [
         {
           text: "Routines",
           routeName: routes.routines.name,
-          icon: "mdi-calendar",
+          icon: "mdi-format-list-bulleted-type",
         },
         {
           text: "Settings",
@@ -82,7 +82,25 @@ export default {
           text: this.routine.name,
           routeName: routes.sessions.name,
           routeParams: { routineId: this.routine.id },
-          icon: "mdi-format-list-bulleted-type",
+          icon: "mdi-calendar",
+        });
+      }
+
+      if (this.session) {
+        items.unshift({
+          text: this.session.name,
+          routeName: routes.exercises.name,
+          routeParams: { sessionId: this.session.id },
+          icon: "mdi-dumbbell",
+        });
+      }
+
+      if (this.exercise) {
+        items.unshift({
+          text: this.exercise.name,
+          routeName: routes.exercise.name,
+          routeParams: { exerciseId: this.exercise.id },
+          icon: "mdi-numeric",
         });
       }
 

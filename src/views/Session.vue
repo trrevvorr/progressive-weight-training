@@ -1,6 +1,6 @@
 <template>
   <div>
-    <router-view v-if="routine" :routine="routine"></router-view>
+    <router-view v-if="session" :session="session"></router-view>
     <SkeletonList v-else />
   </div>
 </template>
@@ -11,25 +11,25 @@ import SkeletonList from "../components/SkeletonList";
 
 export default {
   props: {
-    routineId: String,
+    sessionId: String,
   },
   components: {
     SkeletonList,
   },
   data: function() {
     return {
-      routine: null,
+      session: null,
     };
   },
   created() {
-    this.setRoutineId(this.routineId);
-    this.routine = this.getRoutine;
+    this.setSessionId(this.sessionId);
+    this.session = this.getSession;
   },
   computed: {
-    ...mapGetters({ getRoutine: "routine" }),
+    ...mapGetters({ getSession: "session" }),
   },
   methods: {
-    ...mapMutations(["setRoutineId"]),
+    ...mapMutations(["setSessionId"]),
   },
 };
 </script>

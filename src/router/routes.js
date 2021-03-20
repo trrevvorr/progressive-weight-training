@@ -4,6 +4,9 @@ import UserSettings from "../views/UserSettings.vue";
 import Routines from "../views/Routines";
 import Routine from "../views/Routine";
 import Sessions from "../views/Sessions";
+import Session from "../views/Session";
+import Exercises from "../views/Exercises";
+import Exercise from "../views/Exercise";
 import Logout from "../views/Logout";
 
 export default {
@@ -40,5 +43,21 @@ export default {
     path: "sessions",
     name: "Sessions",
     component: Sessions,
+  },
+  session: {
+    path: "session/:sessionId",
+    component: Session,
+    props: true,
+  },
+  exercises: {
+    path: "exercises",
+    name: "Exercises",
+    component: Exercises,
+  },
+  exercise: {
+    path: "exercise/:exerciseId",
+    component: Exercise,
+    name: "Exercise",
+    props: true,
   },
 };

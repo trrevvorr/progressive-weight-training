@@ -170,6 +170,13 @@ export const getUser = /* GraphQL */ `
               createdAt
               updatedAt
               Exercises {
+                items {
+                  id
+                  name
+                  sessionID
+                  createdAt
+                  updatedAt
+                }
                 nextToken
               }
             }
@@ -207,6 +214,16 @@ export const listUsers = /* GraphQL */ `
                 routineID
                 createdAt
                 updatedAt
+                Exercises {
+                  items {
+                    id
+                    name
+                    sessionID
+                    createdAt
+                    updatedAt
+                  }
+                  nextToken
+                }
               }
               nextToken
             }

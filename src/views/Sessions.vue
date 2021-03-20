@@ -7,6 +7,7 @@
         v-for="session in sortedSessions"
         :key="session.id"
         class="section"
+        @click="selectSession(session.id)"
       >
         <v-card-title class="card-title">{{ session.name }}</v-card-title>
         <v-card-actions>
@@ -30,7 +31,7 @@
         </v-card-actions>
       </v-card>
     </div>
-    <v-row v-else class="no-routiens-message" justify="center">
+    <v-row v-else class="no-sessions-message" justify="center">
       <p class="text--secondary">
         Click the "+" to create your first session
       </p>
@@ -72,6 +73,7 @@ import { mapActions, mapGetters } from "vuex";
 import SubmitButton from "../components/SubmitButton";
 import PageHeader from "../components/PageHeader";
 import EditDialog from "../components/EditDialog";
+import routes from "../router/routes";
 
 export default {
   props: {
@@ -132,6 +134,12 @@ export default {
     tryDeleteSession(id) {
       return this.deleteSession(id);
     },
+    selectSession(id) {
+      this.$router.push({
+        name: routes.exercises.name,
+        params: { sessionId: id },
+      });
+    },
   },
 };
 </script>
@@ -145,7 +153,7 @@ export default {
   word-break: break-word;
 }
 
-.no-routiens-message {
+.no-sessions-message {
   position: absolute;
   top: 50%;
   width: 100%;

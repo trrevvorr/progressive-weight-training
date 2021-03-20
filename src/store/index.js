@@ -5,12 +5,15 @@ import { getUser } from "../graphql/queries";
 import {
   createRoutine,
   createSession,
+  createExercise,
   createUser,
   deleteRoutine,
   deleteSession,
+  deleteExercise,
   deleteUser,
   updateRoutine,
   updateSession,
+  updateExercise,
   updateUser,
 } from "../graphql/mutations";
 
@@ -23,6 +26,8 @@ export default new Vuex.Store({
     userId: null,
     user: null,
     routineId: null,
+    sessionId: null,
+    exerciseId: null,
   },
   mutations: {
     setUserId(state, id) {
@@ -52,6 +57,9 @@ export default new Vuex.Store({
     },
     createRoutineOnUser(state, newRoutine) {
       state.user.Routines.items = [...state.user.Routines.items, newRoutine];
+    },
+    setSessionId(state, id) {
+      state.sessionId = id;
     },
     updateSessionOnRoutine(state, updatedSession) {
       state.user.Routines.items = state.user.Routines.items.map(routine =>
@@ -96,8 +104,88 @@ export default new Vuex.Store({
           : routine,
       );
     },
+    setExerciseId(state, id) {
+      state.exerciseId = id;
+    },
+    updateExerciseOnSession(state, updatedExercise) {
+      state.user.Routines.items = state.user.Routines.items.map(routine =>
+        routine.id === state.routineId
+          ? {
+              ...routine,
+              Sessions: {
+                ...routine.Sessions,
+                items: routine.Sessions.items.map(session =>
+                  session.id === state.sessionId
+                    ? {
+                        ...session,
+                        Exercises: {
+                          ...session.Exercises,
+                          items: session.Exercises.items.map(exercise =>
+                            exercise.id === updatedExercise.id
+                              ? updatedExercise
+                              : exercise,
+                          ),
+                        },
+                      }
+                    : session,
+                ),
+              },
+            }
+          : routine,
+      );
+    },
+    deleteExerciseOnSession(state, deletedExercise) {
+      state.user.Routines.items = state.user.Routines.items.map(routine =>
+        routine.id === state.routineId
+          ? {
+              ...routine,
+              Sessions: {
+                ...routine.Sessions,
+                items: routine.Sessions.items.filter(session =>
+                  session.id === state.sessionId
+                    ? {
+                        ...session,
+                        Exercises: {
+                          ...session.Exercises,
+                          items: session.Exercises.items.filter(
+                            exercise => exercise.id !== deletedExercise.id,
+                          ),
+                        },
+                      }
+                    : session,
+                ),
+              },
+            }
+          : routine,
+      );
+    },
+    createExerciseOnSession(state, newExercise) {
+      state.user.Routines.items = state.user.Routines.items.map(routine =>
+        routine.id === state.routineId
+          ? {
+              ...routine,
+              Sessions: {
+                ...routine.Sessions,
+                items: routine.Sessions.items.map(session =>
+                  session.id === state.sessionId
+                    ? {
+                        ...session,
+                        Exercises: {
+                          ...session.Exercises,
+                          items: [...session.Exercises.items, newExercise],
+                        },
+                      }
+                    : session,
+                ),
+              },
+            }
+          : routine,
+      );
+    },
     resetState(state) {
-      state.routine = null;
+      state.exerciseId = null;
+      state.sessionId = null;
+      state.routineId = null;
       state.user = null;
       state.userId = null;
       localStorage.removeItem(USER_ID_STORAGE_KEY);
@@ -107,39 +195,66 @@ export default new Vuex.Store({
     userId: state => {
       return state.userId;
     },
-    userName: state => {
-      return state.user && state.user.name;
-    },
     user: state => {
       return state.user;
     },
-    routines: state => {
-      return state.user && state.user.Routines && state.user.Routines.items;
+    userName: (state, getters) => {
+      const user = getters.user;
+      return user && user.name;
+    },
+    routines: (state, getters) => {
+      const user = getters.user;
+      return user && user.Routines && user.Routines.items;
     },
     routineId: state => {
       return state.routineId;
     },
-    routine: state => {
+    routine: (state, getters) => {
+      const routineId = getters.routineId;
+      const user = getters.user;
+
       return (
-        state.routineId &&
-        state.user &&
-        state.user.Routines &&
-        state.user.Routines.items.find(
-          routine => routine.id === state.routineId,
-        )
+        routineId &&
+        user &&
+        user.Routines &&
+        user.Routines.items.find(routine => routine.id === routineId)
       );
     },
-    sessions: state => {
-      const routine =
-        state.user &&
-        state.routineId &&
-        state.user.Routines &&
-        state.user.Routines.items &&
-        state.user.Routines.items.find(
-          routine => routine.id === state.routineId,
-        );
+    sessions: (state, getters) => {
+      const routine = getters.routine;
+      return routine && routine.Sessions && routine.Sessions.items;
+    },
+    sessionId: state => {
+      return state.sessionId;
+    },
+    session: (state, getters) => {
+      const sessionId = getters.sessionId;
+      const routine = getters.routine;
 
-      return routine && routine.Sessions.items;
+      return (
+        sessionId &&
+        routine &&
+        routine.Sessions &&
+        routine.Sessions.items.find(session => session.id === sessionId)
+      );
+    },
+    exercises: (state, getters) => {
+      const session = getters.session;
+      return session && session.Exercises && session.Exercises.items;
+    },
+    exerciseId: state => {
+      return state.exerciseId;
+    },
+    exercise: (state, getters) => {
+      const exerciseId = getters.exerciseId;
+      const session = getters.session;
+
+      return (
+        exerciseId &&
+        session &&
+        session.Exercises &&
+        session.Exercises.items.find(exercise => exercise.id === exerciseId)
+      );
     },
   },
   actions: {
@@ -375,6 +490,78 @@ export default new Vuex.Store({
         return Promise.reject({
           status: 400,
           message: `deleteSession failed due to invalid input: id=${JSON.stringify(
+            id,
+          )}`,
+        });
+      }
+    },
+    //#endregion
+    //#region exercise
+    createExercise({ commit, getters }, exercise) {
+      const sessionId = getters.sessionId;
+
+      if (sessionId && exercise && exercise.name) {
+        const input = {
+          name: exercise.name,
+          sessionID: sessionId,
+        };
+        return API.graphql(graphqlOperation(createExercise, { input })).then(
+          response => {
+            if (response.data.createExercise) {
+              commit("createExerciseOnSession", response.data.createExercise);
+            }
+            return response.data.createExercise;
+          },
+        );
+      } else {
+        return Promise.reject({
+          status: 400,
+          message: `createExercise failed due to invalid input: exercise=${JSON.stringify(
+            exercise,
+          )}, sessionId=${sessionId}`,
+        });
+      }
+    },
+    updateExerciseName({ commit, getters }, exercise) {
+      const sessionId = getters.sessionId;
+
+      if (sessionId && exercise && exercise.name && exercise.id) {
+        const input = {
+          id: exercise.id,
+          name: exercise.name,
+        };
+        return API.graphql(graphqlOperation(updateExercise, { input })).then(
+          response => {
+            if (response.data.updateExercise) {
+              commit("updateExerciseOnSession", response.data.updateExercise);
+            }
+            return response.data.updateExercise;
+          },
+        );
+      } else {
+        return Promise.reject({
+          status: 400,
+          message: `updateExerciseName failed due to invalid input: exercise=${JSON.stringify(
+            exercise,
+          )}, sessionId=${sessionId}`,
+        });
+      }
+    },
+    deleteExercise({ commit }, id) {
+      if (id) {
+        const input = { id };
+        return API.graphql(graphqlOperation(deleteExercise, { input })).then(
+          response => {
+            if (response.data.deleteExercise) {
+              commit("deleteExerciseOnSession", response.data.deleteExercise);
+            }
+            return response.data.deleteExercise;
+          },
+        );
+      } else {
+        return Promise.reject({
+          status: 400,
+          message: `deleteExercise failed due to invalid input: id=${JSON.stringify(
             id,
           )}`,
         });

@@ -30,7 +30,7 @@
         </v-card-actions>
       </v-card>
     </div>
-    <v-row v-else class="no-routiens-message" justify="center">
+    <v-row v-else class="no-routines-message" justify="center">
       <p class="text--secondary">
         Click the "+" to create your first routine
       </p>
@@ -151,7 +151,7 @@ export default {
   word-break: break-word;
 }
 
-.no-routiens-message {
+.no-routines-message {
   position: absolute;
   top: 50%;
   width: 100%;
