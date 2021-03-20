@@ -17,13 +17,17 @@ export default {
       type: String,
       default: "Name",
     },
+    validationPattern: {
+      type: String,
+      default: "^[\\w -/]+$",
+    },
   },
   data: function() {
     return {
       currentValue: this.value,
       rules: {
         nameIsPlainText: value => {
-          const pattern = /^[\w ]+$/;
+          const pattern = new RegExp(this.validationPattern);
           return pattern.test(value) || "name contains invalid characters";
         },
       },

@@ -36,7 +36,7 @@
       >
       <v-card-text>
         <v-form v-model="nameFormValid" @:submit.prevent>
-          <NameField v-model="newUserName" />
+          <NameField v-model="newUserName" validationPattern="^[\\w ]+$" />
         </v-form>
       </v-card-text>
       <v-card-actions>
@@ -70,16 +70,8 @@ export default {
   data: function() {
     return {
       newUserName: "",
-      newUserLoading: false,
-      newUserError: false,
       userIdToSearch: "",
       nameFormValid: false,
-      rules: {
-        nameIsPlainText: value => {
-          const pattern = /^[\w ]+$/;
-          return pattern.test(value) || "name contains invalid characters";
-        },
-      },
     };
   },
   computed: {

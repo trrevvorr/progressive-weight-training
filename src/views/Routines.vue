@@ -149,6 +149,7 @@ export default {
 
 .card-title {
   word-break: break-word;
+  text-transform: capitalize;
 }
 
 .no-routines-message {

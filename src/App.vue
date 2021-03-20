@@ -31,7 +31,7 @@
                 <v-icon>{{ item.icon }}</v-icon>
               </v-list-item-icon>
               <v-list-item-content>
-                <v-list-item-title>
+                <v-list-item-title class="nav-item-title">
                   {{ item.text }}
                 </v-list-item-title>
               </v-list-item-content>
@@ -134,3 +134,9 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.nav-item-title {
+  text-transform: capitalize;
+}
+</style>

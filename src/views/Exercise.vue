@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1 v-if="exercise">{{ exercise.name }}</h1>
+    <PageHeader v-if="exercise">{{ exercise.name }}</PageHeader>
     <!-- <router-view v-if="exercise" :exercise="exercise"></router-view> -->
     <SkeletonList v-else />
   </div>
@@ -9,6 +9,7 @@
 <script>
 import { mapGetters, mapMutations } from "vuex";
 import SkeletonList from "../components/SkeletonList";
+import PageHeader from "../components/PageHeader";
 
 export default {
   props: {
@@ -16,6 +17,7 @@ export default {
   },
   components: {
     SkeletonList,
+    PageHeader,
   },
   data: function() {
     return {

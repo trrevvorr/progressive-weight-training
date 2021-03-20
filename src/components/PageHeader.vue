@@ -14,5 +14,6 @@ export default {
 h1 {
   margin-top: 1rem;
   margin-bottom: 2rem;
+  text-transform: capitalize;
 }
 </style>
