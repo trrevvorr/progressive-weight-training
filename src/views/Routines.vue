@@ -84,8 +84,6 @@ export default {
     return {
       newRoutine: null,
       editRoutine: null,
-      editRoutineName: null,
-      editRoutineDialogOpen: false,
     };
   },
   created() {},
@@ -103,17 +101,6 @@ export default {
         }
         return 0;
       });
-    },
-  },
-  watch: {
-    editRoutine: function(newEditRoutine) {
-      this.editRoutineName = newEditRoutine && newEditRoutine.name;
-      this.editRoutineDialogOpen = Boolean(newEditRoutine);
-    },
-    editRoutineDialogOpen: function(newEditRoutineDialogOpen) {
-      if (!newEditRoutineDialogOpen) {
-        this.editRoutine = null;
-      }
     },
   },
   methods: {

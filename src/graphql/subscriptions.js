@@ -7,6 +7,11 @@ export const onCreateExercise = /* GraphQL */ `
       id
       name
       index
+      sets {
+        weight
+        reps
+        rest
+      }
       sessionID
       createdAt
       updatedAt
@@ -19,6 +24,11 @@ export const onUpdateExercise = /* GraphQL */ `
       id
       name
       index
+      sets {
+        weight
+        reps
+        rest
+      }
       sessionID
       createdAt
       updatedAt
@@ -31,6 +41,11 @@ export const onDeleteExercise = /* GraphQL */ `
       id
       name
       index
+      sets {
+        weight
+        reps
+        rest
+      }
       sessionID
       createdAt
       updatedAt
@@ -51,6 +66,11 @@ export const onCreateSession = /* GraphQL */ `
           id
           name
           index
+          sets {
+            weight
+            reps
+            rest
+          }
           sessionID
           createdAt
           updatedAt
@@ -74,6 +94,11 @@ export const onUpdateSession = /* GraphQL */ `
           id
           name
           index
+          sets {
+            weight
+            reps
+            rest
+          }
           sessionID
           createdAt
           updatedAt
@@ -97,6 +122,11 @@ export const onDeleteSession = /* GraphQL */ `
           id
           name
           index
+          sets {
+            weight
+            reps
+            rest
+          }
           sessionID
           createdAt
           updatedAt
@@ -127,6 +157,11 @@ export const onCreateRoutine = /* GraphQL */ `
               id
               name
               index
+              sets {
+                weight
+                reps
+                rest
+              }
               sessionID
               createdAt
               updatedAt
@@ -160,6 +195,11 @@ export const onUpdateRoutine = /* GraphQL */ `
               id
               name
               index
+              sets {
+                weight
+                reps
+                rest
+              }
               sessionID
               createdAt
               updatedAt
@@ -193,6 +233,11 @@ export const onDeleteRoutine = /* GraphQL */ `
               id
               name
               index
+              sets {
+                weight
+                reps
+                rest
+              }
               sessionID
               createdAt
               updatedAt
@@ -232,6 +277,11 @@ export const onCreateUser = /* GraphQL */ `
                   id
                   name
                   index
+                  sets {
+                    weight
+                    reps
+                    rest
+                  }
                   sessionID
                   createdAt
                   updatedAt
@@ -274,6 +324,11 @@ export const onUpdateUser = /* GraphQL */ `
                   id
                   name
                   index
+                  sets {
+                    weight
+                    reps
+                    rest
+                  }
                   sessionID
                   createdAt
                   updatedAt
@@ -316,6 +371,11 @@ export const onDeleteUser = /* GraphQL */ `
                   id
                   name
                   index
+                  sets {
+                    weight
+                    reps
+                    rest
+                  }
                   sessionID
                   createdAt
                   updatedAt

@@ -114,8 +114,6 @@ export default {
     return {
       newExercise: null,
       editExercise: null,
-      editExerciseName: null,
-      editExerciseDialogOpen: false,
     };
   },
   created() {},
@@ -123,17 +121,6 @@ export default {
     ...mapGetters(["userId", "exercises", "session"]),
     sortedExercises() {
       return [...this.exercises].sort((a, b) => a.index - b.index);
-    },
-  },
-  watch: {
-    editExercise: function(newEditExercise) {
-      this.editExerciseName = newEditExercise && newEditExercise.name;
-      this.editExerciseDialogOpen = Boolean(newEditExercise);
-    },
-    editExerciseDialogOpen: function(newEditExerciseDialogOpen) {
-      if (!newEditExerciseDialogOpen) {
-        this.editExercise = null;
-      }
     },
   },
   methods: {

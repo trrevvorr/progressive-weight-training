@@ -10,6 +10,11 @@ export const createExercise = /* GraphQL */ `
       id
       name
       index
+      sets {
+        weight
+        reps
+        rest
+      }
       sessionID
       createdAt
       updatedAt
@@ -25,6 +30,11 @@ export const updateExercise = /* GraphQL */ `
       id
       name
       index
+      sets {
+        weight
+        reps
+        rest
+      }
       sessionID
       createdAt
       updatedAt
@@ -40,6 +50,11 @@ export const deleteExercise = /* GraphQL */ `
       id
       name
       index
+      sets {
+        weight
+        reps
+        rest
+      }
       sessionID
       createdAt
       updatedAt
@@ -63,6 +78,11 @@ export const createSession = /* GraphQL */ `
           id
           name
           index
+          sets {
+            weight
+            reps
+            rest
+          }
           sessionID
           createdAt
           updatedAt
@@ -89,6 +109,11 @@ export const updateSession = /* GraphQL */ `
           id
           name
           index
+          sets {
+            weight
+            reps
+            rest
+          }
           sessionID
           createdAt
           updatedAt
@@ -115,6 +140,11 @@ export const deleteSession = /* GraphQL */ `
           id
           name
           index
+          sets {
+            weight
+            reps
+            rest
+          }
           sessionID
           createdAt
           updatedAt
@@ -148,6 +178,11 @@ export const createRoutine = /* GraphQL */ `
               id
               name
               index
+              sets {
+                weight
+                reps
+                rest
+              }
               sessionID
               createdAt
               updatedAt
@@ -184,6 +219,11 @@ export const updateRoutine = /* GraphQL */ `
               id
               name
               index
+              sets {
+                weight
+                reps
+                rest
+              }
               sessionID
               createdAt
               updatedAt
@@ -220,6 +260,11 @@ export const deleteRoutine = /* GraphQL */ `
               id
               name
               index
+              sets {
+                weight
+                reps
+                rest
+              }
               sessionID
               createdAt
               updatedAt
@@ -262,6 +307,11 @@ export const createUser = /* GraphQL */ `
                   id
                   name
                   index
+                  sets {
+                    weight
+                    reps
+                    rest
+                  }
                   sessionID
                   createdAt
                   updatedAt
@@ -307,6 +357,11 @@ export const updateUser = /* GraphQL */ `
                   id
                   name
                   index
+                  sets {
+                    weight
+                    reps
+                    rest
+                  }
                   sessionID
                   createdAt
                   updatedAt
@@ -352,6 +407,11 @@ export const deleteUser = /* GraphQL */ `
                   id
                   name
                   index
+                  sets {
+                    weight
+                    reps
+                    rest
+                  }
                   sessionID
                   createdAt
                   updatedAt

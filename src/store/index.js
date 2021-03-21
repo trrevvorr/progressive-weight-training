@@ -507,10 +507,12 @@ export default new Vuex.Store({
     //#region exercise
     createExercise({ commit, getters }, exercise) {
       const session = getters.session;
+      exercise.sets = exercise.sets ? exercise.sets : [];
 
       if (session.id && exercise && exercise.name) {
         const input = {
           name: exercise.name,
+          sets: exercise.sets,
           sessionID: session.id,
           index: session.Exercises.items.length,
         };
@@ -533,6 +535,7 @@ export default new Vuex.Store({
     },
     updateExercise({ commit, getters }, exercise) {
       const sessionId = getters.sessionId;
+      exercise.sets = exercise.sets ? exercise.sets : [];
 
       if (
         sessionId &&
@@ -544,6 +547,7 @@ export default new Vuex.Store({
         const input = {
           id: exercise.id,
           name: exercise.name,
+          sets: exercise.sets,
           index: exercise.index,
         };
         return API.graphql(graphqlOperation(updateExercise, { input })).then(

@@ -9,7 +9,18 @@
       <v-card-title>{{ dialogTitle }}</v-card-title>
       <v-card-text>
         <v-form v-model="formValid" @:submit.prevent="() => $emit('submit')">
-          <NameField v-model="currentValue.name" />
+          <NumberField
+            v-model="currentValue.weight"
+            label="Weight"
+            suffix="lbs"
+          />
+          <NumberField
+            v-model="currentValue.reps"
+            label="Reps"
+            suffix="reps"
+            :incrementBy="1"
+          />
+          <NumberField v-model="currentValue.rest" label="Rest" suffix="sec" />
         </v-form>
       </v-card-text>
       <v-card-actions>
@@ -26,7 +37,12 @@
         <!-- TODO: how to use @click but also handle errors displayed? -->
         <SubmitButton
           @click="() => $emit('submit')"
-          :disabled="!formValid || !currentValue.name"
+          :disabled="
+            !formValid ||
+              !currentValue.weight ||
+              !currentValue.reps ||
+              !currentValue.rest
+          "
           errorMessage="Invalid input."
           fatalMessage="Failed to save changes. Try again later."
         >
@@ -39,7 +55,7 @@
 
 <script>
 import SubmitButton from "../components/SubmitButton";
-import NameField from "../components/NameField";
+import NumberField from "../components/NumberField";
 
 export default {
   props: {
@@ -49,7 +65,7 @@ export default {
   },
   components: {
     SubmitButton,
-    NameField,
+    NumberField,
   },
   data: function() {
     return {

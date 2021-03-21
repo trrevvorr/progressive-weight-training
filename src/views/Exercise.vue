@@ -1,15 +1,114 @@
 <template>
   <div>
-    <PageHeader v-if="exercise">{{ exercise.name }}</PageHeader>
-    <!-- <router-view v-if="exercise" :exercise="exercise"></router-view> -->
+    <div v-if="exercise">
+      <PageHeader>{{ exercise.name }}</PageHeader>
+      <v-timeline dense v-if="exercise.sets && exercise.sets.length">
+        <span v-for="(set, index) in exercise.sets" :key="index">
+          <v-timeline-item fill-dot color="primary">
+            <template v-slot:icon>
+              <b>{{ index + 1 }}</b>
+            </template>
+            <v-row align-content="center">
+              <v-col cols="6">
+                <v-row>
+                  <v-col class="weight cell" cols="5">
+                    <span class="value">{{ set.weight }}</span>
+                    <span class="label">lbs</span>
+                  </v-col>
+                  <v-col class="divider" cols="2">
+                    ×
+                  </v-col>
+                  <v-col class="reps cell" cols="5">
+                    <span class="value">{{ set.reps }}</span>
+                    <span class="label">reps</span>
+                  </v-col>
+                </v-row>
+              </v-col>
+              <v-col class="actions" cols="6" align-self="center">
+                <v-row align="end" justify="end">
+                  <v-btn
+                    class="delete-button action"
+                    color="error"
+                    icon
+                    @click="() => tryDeleteSet(index)"
+                  >
+                    <v-icon>
+                      mdi-delete
+                    </v-icon>
+                  </v-btn>
+                  <v-btn
+                    class="edit-button action"
+                    @click="
+                      () => {
+                        editSet = JSON.parse(JSON.stringify(set));
+                        editSetIndex = index;
+                      }
+                    "
+                    icon
+                    color="primary"
+                  >
+                    <v-icon>
+                      mdi-pencil
+                    </v-icon>
+                  </v-btn>
+                </v-row>
+              </v-col>
+            </v-row>
+          </v-timeline-item>
+          <v-timeline-item fill-dot color="secondary" icon="mdi-timer">
+            <v-row align-content="center" cols="6">
+              <v-col>
+                <v-row>
+                  <v-col class="rest cell" cols="5">
+                    <span class="value">{{ set.rest }}</span>
+                    <span class="label">sec</span>
+                  </v-col>
+                  <v-col cols="7" />
+                </v-row>
+              </v-col>
+              <v-col cols="6"> </v-col>
+            </v-row>
+          </v-timeline-item>
+        </span>
+      </v-timeline>
+      <v-btn
+        key="mdi-plus"
+        color="green"
+        fab
+        large
+        dark
+        bottom
+        right
+        fixed
+        @click="() => (newSet = { ...defaultSet })"
+      >
+        <v-icon>mdi-plus</v-icon>
+      </v-btn>
+
+      <EditSetDialog
+        :dialogTitle="`Edit Set ${editSetIndex + 1}`"
+        v-model="editSet"
+        @submit="tryEditSet"
+        submitButtonLabel="Save"
+      >
+      </EditSetDialog>
+      <EditSetDialog
+        dialogTitle="New Set"
+        v-model="newSet"
+        @submit="tryCreateSet"
+        submitButtonLabel="Create"
+      >
+      </EditSetDialog>
+    </div>
     <SkeletonList v-else />
   </div>
 </template>
 
 <script>
-import { mapGetters, mapMutations } from "vuex";
+import { mapGetters, mapMutations, mapActions } from "vuex";
 import SkeletonList from "../components/SkeletonList";
 import PageHeader from "../components/PageHeader";
+import EditSetDialog from "../components/EditSetDialog";
 
 export default {
   props: {
@@ -18,27 +117,95 @@ export default {
   components: {
     SkeletonList,
     PageHeader,
+    EditSetDialog,
   },
   data: function() {
     return {
-      exercise: null,
+      editSet: null,
+      editSetIndex: null,
+      newSet: null,
     };
   },
   created() {
     this.setExerciseId(this.exerciseId);
-    this.exercise = this.getExercise;
+  },
+  watch: {
+    editSet: function(newEditSet) {
+      if (newEditSet === null) {
+        this.editSetIndex = null;
+      }
+    },
   },
   computed: {
-    ...mapGetters({ getExercise: "exercise" }),
+    ...mapGetters(["exercise"]),
+    defaultSet() {
+      return {
+        weight:
+          this.exercise && this.exercise.sets && this.exercise.sets.length
+            ? this.exercise.sets[this.exercise.sets.length - 1].weight
+            : 15,
+        reps:
+          this.exercise && this.exercise.sets && this.exercise.sets.length
+            ? this.exercise.sets[this.exercise.sets.length - 1].reps
+            : 10,
+        rest:
+          this.exercise && this.exercise.sets && this.exercise.sets.length
+            ? this.exercise.sets[this.exercise.sets.length - 1].rest
+            : 60,
+      };
+    },
   },
   methods: {
     ...mapMutations(["setExerciseId"]),
+    ...mapActions(["updateExercise"]),
+    tryCreateSet() {
+      return this.updateExercise({
+        ...this.exercise,
+        sets: [...this.exercise.sets, this.newSet],
+      }).then((this.newSet = null));
+    },
+    tryEditSet() {
+      const newSets = [...this.exercise.sets];
+      newSets.splice(this.editSetIndex, 1, this.editSet);
+
+      return this.updateExercise({
+        ...this.exercise,
+        sets: newSets,
+      }).then(() => {
+        this.editSet = null;
+      });
+    },
+    tryDeleteSet(deleteIndex) {
+      return this.updateExercise({
+        ...this.exercise,
+        sets: this.exercise.sets.filter((set, index) => index != deleteIndex),
+      });
+    },
   },
 };
 </script>
 
 <style scoped>
-.section {
-  margin-top: 2rem;
+.cell {
+  text-align: center;
+}
+
+.cell .value,
+.divider {
+  font-size: 1.5rem;
+}
+
+.cell .label {
+  margin-left: 0.25rem;
+  color: gray;
+}
+
+.divider,
+.rest {
+  color: gray;
+}
+
+.action {
+  margin-right: 1rem;
 }
 </style>

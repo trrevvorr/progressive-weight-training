@@ -2,6 +2,7 @@ type Exercise @model @auth(rules: [{allow: public}]) @key(name: "bySession", fie
   id: ID!
   name: String
   index: Int
+  sets: [Set]
   sessionID: ID
 }
 
@@ -24,4 +25,10 @@ type User @model @auth(rules: [{ allow: public }]) {
   id: ID!
   name: String
   Routines: [Routine] @connection(keyName: "byUser", fields: ["id"])
+}
+
+type Set {
+  weight: Float,
+  reps: Int,
+  rest: Int
 }

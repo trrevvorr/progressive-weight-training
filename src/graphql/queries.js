@@ -7,6 +7,11 @@ export const getExercise = /* GraphQL */ `
       id
       name
       index
+      sets {
+        weight
+        reps
+        rest
+      }
       sessionID
       createdAt
       updatedAt
@@ -24,6 +29,11 @@ export const listExercises = /* GraphQL */ `
         id
         name
         index
+        sets {
+          weight
+          reps
+          rest
+        }
         sessionID
         createdAt
         updatedAt
@@ -46,6 +56,11 @@ export const getSession = /* GraphQL */ `
           id
           name
           index
+          sets {
+            weight
+            reps
+            rest
+          }
           sessionID
           createdAt
           updatedAt
@@ -74,6 +89,11 @@ export const listSessions = /* GraphQL */ `
             id
             name
             index
+            sets {
+              weight
+              reps
+              rest
+            }
             sessionID
             createdAt
             updatedAt
@@ -106,6 +126,11 @@ export const getRoutine = /* GraphQL */ `
               id
               name
               index
+              sets {
+                weight
+                reps
+                rest
+              }
               sessionID
               createdAt
               updatedAt
@@ -144,6 +169,11 @@ export const listRoutines = /* GraphQL */ `
                 id
                 name
                 index
+                sets {
+                  weight
+                  reps
+                  rest
+                }
                 sessionID
                 createdAt
                 updatedAt
@@ -185,6 +215,11 @@ export const getUser = /* GraphQL */ `
                   id
                   name
                   index
+                  sets {
+                    weight
+                    reps
+                    rest
+                  }
                   sessionID
                   createdAt
                   updatedAt

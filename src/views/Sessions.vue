@@ -115,25 +115,12 @@ export default {
     return {
       newSession: null,
       editSession: null,
-      editSessionName: null,
-      editSessionDialogOpen: false,
     };
   },
   computed: {
     ...mapGetters(["userId", "sessions"]),
     sortedSessions() {
       return [...this.sessions].sort((a, b) => a.index - b.index);
-    },
-  },
-  watch: {
-    editSession: function(newEditSession) {
-      this.editSessionName = newEditSession && newEditSession.name;
-      this.editSessionDialogOpen = Boolean(newEditSession);
-    },
-    editSessionDialogOpen: function(newEditSessionDialogOpen) {
-      if (!newEditSessionDialogOpen) {
-        this.editSession = null;
-      }
     },
   },
   methods: {
