@@ -81,14 +81,14 @@
     <EditDialog
       dialogTitle="Edit Session"
       v-model="editSession"
-      @submit="tryEditSession"
+      :onSubmit="tryEditSession"
       submitButtonLabel="Save"
     >
     </EditDialog>
     <EditDialog
       dialogTitle="New Session"
       v-model="newSession"
-      @submit="tryCreateSession"
+      :onSubmit="tryCreateSession"
       submitButtonLabel="Create"
     >
     </EditDialog>
@@ -128,7 +128,7 @@ export default {
     tryCreateSession() {
       return this.createSession({
         name: this.newSession.name,
-      }).then((this.newSession = null));
+      }).then(() => (this.newSession = null));
     },
     tryEditSession() {
       return this.updateSession(this.editSession).then(

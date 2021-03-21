@@ -83,14 +83,14 @@
     <EditDialog
       dialogTitle="Edit Exercise"
       v-model="editExercise"
-      @submit="tryEditExercise"
+      :onSubmit="tryEditExercise"
       submitButtonLabel="Save"
     >
     </EditDialog>
     <EditDialog
       dialogTitle="New Exercise"
       v-model="newExercise"
-      @submit="tryCreateExercise"
+      :onSubmit="tryCreateExercise"
       submitButtonLabel="Create"
     >
     </EditDialog>
@@ -128,7 +128,7 @@ export default {
     tryCreateExercise() {
       return this.createExercise({
         name: this.newExercise.name,
-      }).then((this.newExercise = null));
+      }).then(() => (this.newExercise = null));
     },
     tryEditExercise() {
       return this.updateExercise(this.editExercise).then(

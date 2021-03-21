@@ -6,6 +6,7 @@
       text
       :loading="loading"
       :color="buttonColor"
+      :icon="icon"
     >
       <slot />
     </v-btn>
@@ -28,6 +29,7 @@ export default {
       type: String,
       default: "primary",
     },
+    icon: Boolean,
   },
   data: function() {
     return {

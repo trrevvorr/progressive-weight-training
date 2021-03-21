@@ -5,7 +5,7 @@
     <v-card class="section">
       <v-card-title>User Details</v-card-title>
       <v-card-text>
-        <v-form v-if="userName" v-model="nameFormValid" @:submit.prevent>
+        <v-form v-if="userName" v-model="nameFormValid">
           <NameField v-model="name" />
         </v-form>
         <v-skeleton-loader v-else max-width="300" type="text" />

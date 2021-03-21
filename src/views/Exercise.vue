@@ -26,16 +26,18 @@
               </v-col>
               <v-col class="actions" cols="6" align-self="center">
                 <v-row align="end" justify="end">
-                  <v-btn
+                  <SubmitButton
                     class="delete-button action"
-                    color="error"
+                    :onClick="() => tryDeleteSet(index)"
+                    errorMessage="Invalid input."
+                    fatalMessage="Failed to delete set. Try again later."
                     icon
-                    @click="() => tryDeleteSet(index)"
+                    buttonColor="error"
                   >
                     <v-icon>
                       mdi-delete
                     </v-icon>
-                  </v-btn>
+                  </SubmitButton>
                   <v-btn
                     class="edit-button action"
                     @click="
@@ -88,14 +90,14 @@
       <EditSetDialog
         :dialogTitle="`Edit Set ${editSetIndex + 1}`"
         v-model="editSet"
-        @submit="tryEditSet"
+        :onSubmit="tryEditSet"
         submitButtonLabel="Save"
       >
       </EditSetDialog>
       <EditSetDialog
         dialogTitle="New Set"
         v-model="newSet"
-        @submit="tryCreateSet"
+        :onSubmit="tryCreateSet"
         submitButtonLabel="Create"
       >
       </EditSetDialog>
@@ -109,6 +111,7 @@ import { mapGetters, mapMutations, mapActions } from "vuex";
 import SkeletonList from "../components/SkeletonList";
 import PageHeader from "../components/PageHeader";
 import EditSetDialog from "../components/EditSetDialog";
+import SubmitButton from "../components/SubmitButton";
 
 export default {
   props: {
@@ -118,6 +121,7 @@ export default {
     SkeletonList,
     PageHeader,
     EditSetDialog,
+    SubmitButton,
   },
   data: function() {
     return {
@@ -164,7 +168,7 @@ export default {
       return this.updateExercise({
         ...this.exercise,
         sets: [...existingSets, this.newSet],
-      }).then((this.newSet = null));
+      }).then(() => (this.newSet = null));
     },
     tryEditSet() {
       const newSets = [...this.exercise.sets];

@@ -8,7 +8,7 @@
     <v-card v-if="currentValue">
       <v-card-title>{{ dialogTitle }}</v-card-title>
       <v-card-text>
-        <v-form v-model="formValid" @:submit.prevent="() => $emit('submit')">
+        <v-form v-model="formValid">
           <NumberField
             v-model="currentValue.weight"
             label="Weight"
@@ -34,9 +34,8 @@
         >
           Cancel
         </v-btn>
-        <!-- TODO: how to use @click but also handle errors displayed? -->
         <SubmitButton
-          @click="() => $emit('submit')"
+          :onClick="onSubmit"
           :disabled="
             !formValid ||
               !currentValue.weight ||
@@ -62,6 +61,7 @@ export default {
     value: Object,
     dialogTitle: String,
     submitButtonLabel: String,
+    onSubmit: Function,
   },
   components: {
     SubmitButton,

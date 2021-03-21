@@ -53,14 +53,14 @@
     <EditDialog
       dialogTitle="Edit Routine"
       v-model="editRoutine"
-      @submit="tryEditRoutine"
+      :onSubmit="tryEditRoutine"
       submitButtonLabel="Save"
     >
     </EditDialog>
     <EditDialog
       dialogTitle="New Routine"
       v-model="newRoutine"
-      @submit="tryCreateRoutine"
+      :onSubmit="tryCreateRoutine"
       submitButtonLabel="Create"
     >
     </EditDialog>
@@ -109,7 +109,7 @@ export default {
     tryCreateRoutine() {
       return this.createRoutine({
         name: this.newRoutine.name,
-      }).then((this.newRoutine = null));
+      }).then(() => (this.newRoutine = null));
     },
     tryEditRoutine() {
       return this.updateRoutineName(this.editRoutine).then(

@@ -35,7 +35,7 @@
         one.</v-card-subtitle
       >
       <v-card-text>
-        <v-form v-model="nameFormValid" @:submit.prevent>
+        <v-form v-model="nameFormValid">
           <NameField v-model="newUserName" validationPattern="^[\\w ]+$" />
         </v-form>
       </v-card-text>
