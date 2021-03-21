@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <span>
     <v-btn
       @click="takeAction"
       :disabled="disabled"
@@ -12,7 +12,7 @@
     <v-snackbar v-model="exception" color="red" text>
       {{ exceptionMessage }}
     </v-snackbar>
-  </div>
+  </span>
 </template>
 
 <script>

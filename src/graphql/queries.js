@@ -6,6 +6,7 @@ export const getExercise = /* GraphQL */ `
     getExercise(id: $id) {
       id
       name
+      index
       sessionID
       createdAt
       updatedAt
@@ -22,6 +23,7 @@ export const listExercises = /* GraphQL */ `
       items {
         id
         name
+        index
         sessionID
         createdAt
         updatedAt
@@ -36,12 +38,14 @@ export const getSession = /* GraphQL */ `
       id
       name
       routineID
+      index
       createdAt
       updatedAt
       Exercises {
         items {
           id
           name
+          index
           sessionID
           createdAt
           updatedAt
@@ -62,12 +66,14 @@ export const listSessions = /* GraphQL */ `
         id
         name
         routineID
+        index
         createdAt
         updatedAt
         Exercises {
           items {
             id
             name
+            index
             sessionID
             createdAt
             updatedAt
@@ -92,12 +98,14 @@ export const getRoutine = /* GraphQL */ `
           id
           name
           routineID
+          index
           createdAt
           updatedAt
           Exercises {
             items {
               id
               name
+              index
               sessionID
               createdAt
               updatedAt
@@ -128,12 +136,14 @@ export const listRoutines = /* GraphQL */ `
             id
             name
             routineID
+            index
             createdAt
             updatedAt
             Exercises {
               items {
                 id
                 name
+                index
                 sessionID
                 createdAt
                 updatedAt
@@ -167,12 +177,14 @@ export const getUser = /* GraphQL */ `
               id
               name
               routineID
+              index
               createdAt
               updatedAt
               Exercises {
                 items {
                   id
                   name
+                  index
                   sessionID
                   createdAt
                   updatedAt
@@ -212,12 +224,14 @@ export const listUsers = /* GraphQL */ `
                 id
                 name
                 routineID
+                index
                 createdAt
                 updatedAt
                 Exercises {
                   items {
                     id
                     name
+                    index
                     sessionID
                     createdAt
                     updatedAt

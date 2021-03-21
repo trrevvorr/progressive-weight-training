@@ -426,12 +426,13 @@ export default new Vuex.Store({
     //#endregion
     //#region session
     createSession({ commit, getters }, session) {
-      const routineId = getters.routineId;
+      const routine = getters.routine;
 
-      if (routineId && session && session.name) {
+      if (routine && routine.id && session && session.name) {
         const input = {
           name: session.name,
-          routineID: routineId,
+          routineID: routine.id,
+          index: routine.Sessions.items.length,
         };
         return API.graphql(graphqlOperation(createSession, { input })).then(
           response => {
@@ -446,17 +447,24 @@ export default new Vuex.Store({
           status: 400,
           message: `createSession failed due to invalid input: session=${JSON.stringify(
             session,
-          )}, routineId=${routineId}`,
+          )}, routineId=${routine.id}`,
         });
       }
     },
-    updateSessionName({ commit, getters }, session) {
+    updateSession({ commit, getters }, session) {
       const routineId = getters.routineId;
 
-      if (routineId && session && session.name && session.id) {
+      if (
+        routineId &&
+        session &&
+        session.name &&
+        session.id &&
+        (session.index === 0 || session.index > 0)
+      ) {
         const input = {
           id: session.id,
           name: session.name,
+          index: session.index,
         };
         return API.graphql(graphqlOperation(updateSession, { input })).then(
           response => {
@@ -469,7 +477,7 @@ export default new Vuex.Store({
       } else {
         return Promise.reject({
           status: 400,
-          message: `updateSessionName failed due to invalid input: session=${JSON.stringify(
+          message: `updateSession failed due to invalid input: session=${JSON.stringify(
             session,
           )}, routineId=${routineId}`,
         });
@@ -498,12 +506,13 @@ export default new Vuex.Store({
     //#endregion
     //#region exercise
     createExercise({ commit, getters }, exercise) {
-      const sessionId = getters.sessionId;
+      const session = getters.session;
 
-      if (sessionId && exercise && exercise.name) {
+      if (session.id && exercise && exercise.name) {
         const input = {
           name: exercise.name,
-          sessionID: sessionId,
+          sessionID: session.id,
+          index: session.Exercises.items.length,
         };
         return API.graphql(graphqlOperation(createExercise, { input })).then(
           response => {
@@ -518,17 +527,24 @@ export default new Vuex.Store({
           status: 400,
           message: `createExercise failed due to invalid input: exercise=${JSON.stringify(
             exercise,
-          )}, sessionId=${sessionId}`,
+          )}, sessionId=${session.id}`,
         });
       }
     },
-    updateExerciseName({ commit, getters }, exercise) {
+    updateExercise({ commit, getters }, exercise) {
       const sessionId = getters.sessionId;
 
-      if (sessionId && exercise && exercise.name && exercise.id) {
+      if (
+        sessionId &&
+        exercise &&
+        exercise.name &&
+        exercise.id &&
+        (exercise.index === 0 || exercise.index > 0)
+      ) {
         const input = {
           id: exercise.id,
           name: exercise.name,
+          index: exercise.index,
         };
         return API.graphql(graphqlOperation(updateExercise, { input })).then(
           response => {
@@ -541,7 +557,7 @@ export default new Vuex.Store({
       } else {
         return Promise.reject({
           status: 400,
-          message: `updateExerciseName failed due to invalid input: exercise=${JSON.stringify(
+          message: `updateExercise failed due to invalid input: exercise=${JSON.stringify(
             exercise,
           )}, sessionId=${sessionId}`,
         });

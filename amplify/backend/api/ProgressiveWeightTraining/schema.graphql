@@ -1,6 +1,7 @@
 type Exercise @model @auth(rules: [{allow: public}]) @key(name: "bySession", fields: ["sessionID"]) {
   id: ID!
   name: String
+  index: Int
   sessionID: ID
 }
 
@@ -8,6 +9,7 @@ type Session @model @auth(rules: [{allow: public}]) @key(name: "byRoutine", fiel
   id: ID!
   name: String
   routineID: ID
+  index: Int
   Exercises: [Exercise] @connection(keyName: "bySession", fields: ["id"])
 }
 

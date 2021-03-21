@@ -4,29 +4,57 @@
 
     <div v-if="sortedSessions.length">
       <v-card
-        v-for="session in sortedSessions"
+        v-for="(session, index) in sortedSessions"
         :key="session.id"
         class="section"
         @click="selectSession(session.id)"
       >
         <v-card-title class="card-title">{{ session.name }}</v-card-title>
         <v-card-actions>
-          <div @click.stop>
-            <SubmitButton
-              :onClick="() => tryDeleteSession(session.id)"
-              buttonColor="error"
-              errorMessage="Failed to delete session. Try again later."
-            >
-              Delete
-            </SubmitButton>
-          </div>
-          <v-btn
-            text
-            color="primary"
-            @click.stop="editSession = JSON.parse(JSON.stringify(session))"
-          >
-            Edit
-          </v-btn>
+          <v-row>
+            <v-col>
+              <span @click.stop>
+                <SubmitButton
+                  :onClick="() => tryDeleteSession(session.id)"
+                  buttonColor="error"
+                  errorMessage="Failed to delete session. Try again later."
+                >
+                  Delete
+                </SubmitButton>
+              </span>
+              <v-btn
+                text
+                color="primary"
+                @click.stop="editSession = JSON.parse(JSON.stringify(session))"
+              >
+                Edit
+              </v-btn>
+            </v-col>
+            <v-col cols="auto">
+              <v-btn
+                text
+                icon
+                color="primary"
+                :disabled="index === 0"
+                @click.stop="tryReorder(index, 1)"
+              >
+                <v-icon>
+                  mdi-arrow-up
+                </v-icon>
+              </v-btn>
+              <v-btn
+                text
+                icon
+                color="primary"
+                :disabled="index === sortedSessions.length - 1"
+                @click.stop="tryReorder(index, -1)"
+              >
+                <v-icon>
+                  mdi-arrow-down
+                </v-icon>
+              </v-btn>
+            </v-col>
+          </v-row>
         </v-card-actions>
       </v-card>
     </div>
@@ -94,17 +122,7 @@ export default {
   computed: {
     ...mapGetters(["userId", "sessions"]),
     sortedSessions() {
-      return [...this.sessions].sort((a, b) => {
-        var nameA = a.name.toUpperCase();
-        var nameB = b.name.toUpperCase();
-        if (nameA < nameB) {
-          return -1;
-        }
-        if (nameA > nameB) {
-          return 1;
-        }
-        return 0;
-      });
+      return [...this.sessions].sort((a, b) => a.index - b.index);
     },
   },
   watch: {
@@ -119,16 +137,49 @@ export default {
     },
   },
   methods: {
-    ...mapActions(["createSession", "deleteSession", "updateSessionName"]),
+    ...mapActions(["createSession", "deleteSession", "updateSession"]),
     tryCreateSession() {
       return this.createSession({
         name: this.newSession.name,
       }).then((this.newSession = null));
     },
     tryEditSession() {
-      return this.updateSessionName(this.editSession).then(
+      return this.updateSession(this.editSession).then(
         () => (this.editSession = null),
       );
+    },
+    tryReorder(currentIndex, numSpacesUp) {
+      const oldOrder = [...this.sortedSessions];
+
+      if (
+        currentIndex - numSpacesUp < 0 ||
+        currentIndex - numSpacesUp >= oldOrder.lenght
+      ) {
+        throw Error(
+          `invalid reorder: currentIndex=${currentIndex}, numSpacesUp=${numSpacesUp}, totalSpaces=${oldOrder.length}`,
+        );
+      }
+
+      const newOrder = this.moveItemInArray(
+        oldOrder,
+        currentIndex,
+        currentIndex - numSpacesUp,
+      );
+
+      const changedOrder = newOrder
+        .map((session, index) => ({ ...session, index }))
+        .filter((session, index) => session.id !== oldOrder[index].id);
+
+      return Promise.all(
+        changedOrder.map(session => this.updateSession(session)),
+      );
+    },
+    moveItemInArray(array, from, to) {
+      const copy = [...array];
+      // splice(index, numElmentsToDelete, elementToInsert)
+      const elementToMove = copy.splice(from, 1)[0];
+      copy.splice(to, 0, elementToMove);
+      return copy;
     },
     tryDeleteSession(id) {
       return this.deleteSession(id);
