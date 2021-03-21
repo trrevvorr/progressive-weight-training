@@ -159,9 +159,11 @@ export default {
     ...mapMutations(["setExerciseId"]),
     ...mapActions(["updateExercise"]),
     tryCreateSet() {
+      const existingSets = this.exercise.sets || [];
+
       return this.updateExercise({
         ...this.exercise,
-        sets: [...this.exercise.sets, this.newSet],
+        sets: [...existingSets, this.newSet],
       }).then((this.newSet = null));
     },
     tryEditSet() {
