@@ -10,7 +10,7 @@
         />
       </v-col>
       <v-col cols="6" align-self="center">
-        <v-row justify="end">
+        <v-row justify="end" class="incrementer-row">
           <v-btn
             class="subtract action"
             icon
@@ -21,9 +21,9 @@
               mdi-minus
             </v-icon>
           </v-btn>
-          <v-icon class="divider text--secondary">
-            mdi-slash-forward
-          </v-icon>
+          <span class="divider text--secondary">
+            {{ incrementBy }}
+          </span>
           <v-btn
             class="add action"
             icon
@@ -66,13 +66,22 @@ export default {
   },
   methods: {
     add(amount) {
-      this.currentValue += amount;
+      const newValue = this.currentValue + amount;
+      this.currentValue = newValue < 0 ? 0 : newValue;
     },
   },
 };
 </script>
 
 <style scoped>
+.incrementer-row {
+  align-items: center;
+}
+
+.divider {
+  font-size: 1.25rem;
+}
+
 .action {
   margin-right: 0.25rem;
   margin-left: 0.25rem;

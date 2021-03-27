@@ -27,8 +27,17 @@
         <span v-for="(set, index) in exercise.sets" :key="index">
           <v-timeline-item
             fill-dot
-            color="primary"
-            :class="{ complete: index < currentSet }"
+            :color="
+              index === currentSetIndex && restTime === null
+                ? 'primary'
+                : 'secondary'
+            "
+            :class="{
+              'text--secondary': index !== currentSetIndex || restTime !== null,
+              'complete-set':
+                index < currentSetIndex ||
+                (index === currentSetIndex && restTime !== null),
+            }"
           >
             <template v-slot:icon>
               <b>{{ index + 1 }}</b>
@@ -52,22 +61,17 @@
               <v-col class="actions" cols="6" align-self="center">
                 <v-row align="end" justify="end">
                   <v-btn
-                    v-if="index === currentSet"
+                    v-if="
+                      index < currentSetIndex ||
+                        (index === currentSetIndex && restTime !== null)
+                    "
                     class="edit-button action"
-                    color="success"
-                    @click="nextSet"
+                    @click="() => backToSet(index)"
+                    icon
                   >
-                    Done
+                    <v-icon>mdi-undo</v-icon>
                   </v-btn>
                   <v-btn
-                    v-if="index === currentSet - 1"
-                    class="edit-button action"
-                    @click="previousSet"
-                  >
-                    Undo
-                  </v-btn>
-                  <v-btn
-                    v-if="index <= currentSet"
                     class="edit-button action"
                     @click="
                       () => {
@@ -78,19 +82,29 @@
                     icon
                     color="primary"
                   >
-                    <v-icon>
-                      mdi-pencil
-                    </v-icon>
+                    <v-icon>mdi-pencil</v-icon>
                   </v-btn>
                 </v-row>
               </v-col>
             </v-row>
           </v-timeline-item>
-          <v-timeline-item fill-dot color="accent" icon="mdi-timer">
-            <v-row align-content="center" cols="6">
+          <v-timeline-item
+            fill-dot
+            :color="
+              index === currentSetIndex && restTime !== null
+                ? 'accent'
+                : 'secondary'
+            "
+            icon="mdi-timer"
+            :class="{
+              'text--secondary': index !== currentSetIndex || restTime === null,
+              'complete-set': index < currentSetIndex,
+            }"
+          >
+            <v-row align-content="center" class="set-content" cols="6">
               <v-col>
                 <v-row>
-                  <v-col class="rest cell text--secondary" cols="5">
+                  <v-col class="rest cell" cols="5">
                     <span class="value">{{ set.rest }}</span>
                     <span class="label text--secondary">sec</span>
                   </v-col>
@@ -109,7 +123,6 @@
           <v-btn
             v-if="nextExercise"
             class="edit-button action"
-            :color="setsComplete ? 'default' : 'success'"
             :to="{
               name: routes.activeExercise.name,
               params: {
@@ -122,7 +135,6 @@
           <v-btn
             v-else
             class="edit-button action"
-            :color="setsComplete ? 'default' : 'success'"
             :to="{
               name: routes.sessions.name,
             }"
@@ -131,6 +143,95 @@
           </v-btn>
         </v-timeline-item>
       </v-timeline>
+      <v-btn
+        v-show="!setsComplete && restTime === null"
+        color="success"
+        rounded
+        large
+        bottom
+        right
+        fixed
+        @click="() => (currentSet ? startRest(currentSet.rest, true) : null)"
+      >
+        Complete Set
+      </v-btn>
+      <v-speed-dial
+        v-show="!setsComplete && restTime !== null"
+        v-model="restFab"
+        large
+        bottom
+        right
+        fixed
+      >
+        <template v-slot:activator>
+          <v-btn color="accent" fab large bottom right v-model="restFab">
+            <v-progress-circular
+              :value="restTime ? (restTime / originalRestTime) * 100 : 0"
+              :size="62"
+              :width="7"
+              :rotate="-90"
+            >
+              {{ restTime }}
+            </v-progress-circular>
+          </v-btn>
+        </template>
+        <v-btn
+          fab
+          small
+          color="success"
+          @click="
+            () => {
+              restPaused = !restPaused;
+            }
+          "
+        >
+          <v-icon v-if="restPaused">mdi-play</v-icon>
+          <v-icon v-else>mdi-pause</v-icon>
+        </v-btn>
+        <v-btn
+          fab
+          small
+          color="error"
+          @click="
+            () => {
+              restTime = null;
+            }
+          "
+        >
+          <v-icon>mdi-stop</v-icon>
+        </v-btn>
+      </v-speed-dial>
+      <v-btn
+        v-show="setsComplete && nextExercise"
+        color="success"
+        rounded
+        large
+        bottom
+        right
+        fixed
+        :to="{
+          name: routes.activeExercise.name,
+          params: {
+            exerciseId: nextExercise && nextExercise.id,
+          },
+        }"
+      >
+        Next Exercise
+      </v-btn>
+      <v-btn
+        v-show="setsComplete && !nextExercise"
+        color="success"
+        rounded
+        large
+        bottom
+        right
+        fixed
+        :to="{
+          name: routes.sessions.name,
+        }"
+      >
+        Finish Workout
+      </v-btn>
       <EditSetDialog
         :dialogTitle="`Edit Set ${editSetIndex + 1}`"
         v-model="editSet"
@@ -150,6 +251,10 @@ import PageHeader from "../components/PageHeader";
 import routes from "../router/routes";
 import EditSetDialog from "../components/EditSetDialog";
 
+const AUDIO_CONTEXT = new (window.AudioContext ||
+  window.webkitAudioContext ||
+  window.audioContext)();
+
 export default {
   props: {
     exerciseId: String,
@@ -163,19 +268,59 @@ export default {
   },
   data: function() {
     return {
-      currentSet: 0,
+      currentSetIndex: 0,
+      restTime: null,
+      originalRestTime: null,
+      restInterval: null,
       routes,
       editSet: null,
       editSetIndex: null,
+      restFab: false,
+      restPaused: false,
     };
   },
   created() {
     this.setExerciseId(this.exerciseId);
   },
+  destroyed() {
+    clearInterval(this.restInterval);
+  },
   watch: {
     exerciseId: function(newExerciseId) {
       this.setExerciseId(newExerciseId);
-      this.currentSet = 0;
+
+      if (this.restInterval) {
+        this.currentSetIndex = -1;
+      } else {
+        this.restTime = null;
+        this.currentSetIndex = 0;
+      }
+    },
+    restTime: function(newRestTime) {
+      if (newRestTime === null) {
+        clearInterval(this.restInterval);
+        this.restInterval = null;
+        this.currentSetIndex++;
+      } else if (newRestTime === 0) {
+        this.beep(500, 1500);
+        this.restTime = null;
+      } else if (newRestTime === 1) {
+        this.beep(250, 1000);
+      } else if (newRestTime === 2) {
+        this.beep(250, 1000);
+      } else if (newRestTime === 3) {
+        this.beep(250, 1000);
+      } else if (newRestTime < 0) {
+        this.restTime = null;
+      }
+    },
+    restPaused: function(newRestPaused) {
+      if (newRestPaused) {
+        clearInterval(this.restInterval);
+        this.restInterval = null;
+      } else {
+        this.startRest(this.restTime);
+      }
     },
   },
   computed: {
@@ -184,18 +329,32 @@ export default {
       return (
         this.exercise &&
         this.exercise.sets &&
-        this.exercise.sets.length > this.currentSet
+        this.currentSetIndex >= this.exercise.sets.length
+      );
+    },
+    currentSet() {
+      return (
+        this.exercise &&
+        this.exercise.sets &&
+        this.currentSetIndex >= 0 &&
+        this.currentSetIndex < this.exercise.sets.length &&
+        this.exercise.sets[this.currentSetIndex]
       );
     },
   },
   methods: {
     ...mapMutations(["setExerciseId"]),
     ...mapActions(["updateExercise"]),
-    nextSet() {
-      this.currentSet++;
+    startRest(time, reset) {
+      this.originalRestTime = reset ? time : this.originalRestTime;
+      this.restTime = time;
+      this.restInterval = setInterval(() => {
+        this.restTime = this.restTime === null ? null : this.restTime - 1;
+      }, 1000);
     },
-    previousSet() {
-      this.currentSet = this.currentSet == 0 ? 0 : this.currentSet - 1;
+    backToSet(index) {
+      this.restTime = null;
+      this.currentSetIndex = index;
     },
     tryEditSet() {
       const newSets = [...this.exercise.sets];
@@ -207,6 +366,22 @@ export default {
       }).then(() => {
         this.editSet = null;
       });
+    },
+    beep: function(duration, frequency) {
+      const oscillator = AUDIO_CONTEXT.createOscillator();
+      const gainNode = AUDIO_CONTEXT.createGain();
+
+      oscillator.connect(gainNode);
+      gainNode.connect(AUDIO_CONTEXT.destination);
+
+      if (frequency) {
+        oscillator.frequency.value = frequency;
+      }
+
+      gainNode.gain.value = 1;
+      oscillator.type = "sine";
+      oscillator.start(AUDIO_CONTEXT.currentTime);
+      oscillator.stop(AUDIO_CONTEXT.currentTime + (duration || 500) / 1000);
     },
   },
 };
@@ -230,9 +405,13 @@ export default {
   margin-right: 1rem;
 }
 
-.complete .set-content {
+.upcoming-set .set-content {
+  color: gray;
+}
+
+.complete-set .set-content {
   text-decoration: line-through;
-  opacity: 50%;
+  color: gray;
 }
 
 .first-item,
