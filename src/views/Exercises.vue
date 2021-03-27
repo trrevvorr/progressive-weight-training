@@ -67,11 +67,9 @@
     </v-row>
 
     <v-btn
-      key="mdi-plus"
       color="green"
       fab
       large
-      dark
       bottom
       right
       fixed
@@ -110,6 +108,9 @@ export default {
     PageHeader,
     EditDialog,
   },
+  props: {
+    session: Object,
+  },
   data: function() {
     return {
       newExercise: null,
@@ -118,7 +119,7 @@ export default {
   },
   created() {},
   computed: {
-    ...mapGetters(["userId", "exercises", "session"]),
+    ...mapGetters(["userId", "exercises"]),
     sortedExercises() {
       return [...this.exercises].sort((a, b) => a.index - b.index);
     },

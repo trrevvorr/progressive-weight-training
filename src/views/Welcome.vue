@@ -36,7 +36,7 @@
       >
       <v-card-text>
         <v-form v-model="nameFormValid">
-          <NameField v-model="newUserName" validationPattern="^[\\w ]+$" />
+          <NameField v-model="newUserName" validationPattern="^[\w ]+$" />
         </v-form>
       </v-card-text>
       <v-card-actions>

@@ -13,14 +13,14 @@
                 <v-row>
                   <v-col class="weight cell" cols="5">
                     <span class="value">{{ set.weight }}</span>
-                    <span class="label">lbs</span>
+                    <span class="label text--secondary">lbs</span>
                   </v-col>
-                  <v-col class="divider" cols="2">
+                  <v-col class="divider text--secondary" cols="2">
                     ×
                   </v-col>
                   <v-col class="reps cell" cols="5">
                     <span class="value">{{ set.reps }}</span>
-                    <span class="label">reps</span>
+                    <span class="label text--secondary">reps</span>
                   </v-col>
                 </v-row>
               </v-col>
@@ -61,9 +61,9 @@
             <v-row align-content="center" cols="6">
               <v-col>
                 <v-row>
-                  <v-col class="rest cell" cols="5">
+                  <v-col class="rest cell text--secondary" cols="5">
                     <span class="value">{{ set.rest }}</span>
-                    <span class="label">sec</span>
+                    <span class="label text--secondary">sec</span>
                   </v-col>
                   <v-col cols="7" />
                 </v-row>
@@ -72,21 +72,15 @@
             </v-row>
           </v-timeline-item>
         </span>
+        <v-timeline-item fill-dot color="green" class="final-item">
+          <template v-slot:icon color="green">
+            <v-icon>mdi-plus</v-icon>
+          </template>
+          <v-btn color="green" @click="() => (newSet = { ...defaultSet })">
+            Add Set
+          </v-btn>
+        </v-timeline-item>
       </v-timeline>
-      <v-btn
-        key="mdi-plus"
-        color="green"
-        fab
-        large
-        dark
-        bottom
-        right
-        fixed
-        @click="() => (newSet = { ...defaultSet })"
-      >
-        <v-icon>mdi-plus</v-icon>
-      </v-btn>
-
       <EditSetDialog
         :dialogTitle="`Edit Set ${editSetIndex + 1}`"
         v-model="editSet"
@@ -203,15 +197,13 @@ export default {
 
 .cell .label {
   margin-left: 0.25rem;
-  color: gray;
-}
-
-.divider,
-.rest {
-  color: gray;
 }
 
 .action {
   margin-right: 1rem;
+}
+
+.final-item {
+  padding-bottom: 0;
 }
 </style>

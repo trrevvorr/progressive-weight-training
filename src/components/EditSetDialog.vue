@@ -36,12 +36,7 @@
         </v-btn>
         <SubmitButton
           :onClick="onSubmit"
-          :disabled="
-            !formValid ||
-              !currentValue.weight ||
-              !currentValue.reps ||
-              !currentValue.rest
-          "
+          :disabled="!(formValid && inputsValid)"
           errorMessage="Invalid input."
           fatalMessage="Failed to save changes. Try again later."
         >
@@ -73,6 +68,14 @@ export default {
       currentValue: this.value,
       formValid: false,
     };
+  },
+  computed: {
+    inputsValid() {
+      return Object.values(this.currentValue).reduce(
+        (allValid, value) => allValid && (value === 0 || value > 0),
+        true,
+      );
+    },
   },
   watch: {
     value: function(newValue) {

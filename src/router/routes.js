@@ -7,6 +7,9 @@ import Sessions from "../views/Sessions";
 import Session from "../views/Session";
 import Exercises from "../views/Exercises";
 import Exercise from "../views/Exercise";
+import ActiveSession from "../views/ActiveSession";
+import StartSession from "../views/StartSession";
+import ActiveExercise from "../views/ActiveExercise";
 import Logout from "../views/Logout";
 
 export default {
@@ -58,6 +61,21 @@ export default {
     path: "exercise/:exerciseId",
     component: Exercise,
     name: "Exercise",
+    props: true,
+  },
+  activeSession: {
+    path: "active",
+    component: ActiveSession,
+  },
+  startSession: {
+    path: "start",
+    name: "StartSession",
+    component: StartSession,
+  },
+  activeExercise: {
+    path: "exercise/:exerciseId",
+    name: "ActiveExercise",
+    component: ActiveExercise,
     props: true,
   },
 };

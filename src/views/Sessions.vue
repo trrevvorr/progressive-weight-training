@@ -29,6 +29,13 @@
               >
                 Edit
               </v-btn>
+              <v-btn
+                text
+                color="primary"
+                @click.stop="() => startSession(session.id)"
+              >
+                Start
+              </v-btn>
             </v-col>
             <v-col cols="auto">
               <v-btn
@@ -174,6 +181,12 @@ export default {
     selectSession(id) {
       this.$router.push({
         name: routes.exercises.name,
+        params: { sessionId: id },
+      });
+    },
+    startSession(id) {
+      this.$router.push({
+        name: routes.startSession.name,
         params: { sessionId: id },
       });
     },

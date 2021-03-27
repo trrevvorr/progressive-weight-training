@@ -21,7 +21,7 @@
               mdi-minus
             </v-icon>
           </v-btn>
-          <v-icon class="divider">
+          <v-icon class="divider text--secondary">
             mdi-slash-forward
           </v-icon>
           <v-btn
@@ -76,8 +76,5 @@ export default {
 .action {
   margin-right: 0.25rem;
   margin-left: 0.25rem;
-}
-.divider {
-  color: gray;
 }
 </style>
