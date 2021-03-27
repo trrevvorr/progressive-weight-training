@@ -67,7 +67,7 @@
     </v-row>
 
     <v-btn
-      color="green"
+      color="success"
       fab
       large
       bottom

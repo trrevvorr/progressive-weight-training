@@ -18,7 +18,7 @@
             {{ exercise.sets ? exercise.sets.length : 0 }} sets
           </span>
         </v-timeline-item>
-        <v-timeline-item fill-dot color="green" class="final-item">
+        <v-timeline-item fill-dot color="success" class="final-item">
           <template v-slot:icon>
             <v-icon>mdi-check</v-icon>
           </template>
@@ -33,17 +33,17 @@
       </div>
     </div>
     <v-btn
-      color="primary"
+      color="success"
       fab
       large
       bottom
       right
       fixed
-      :disabled="!nextExerciseId"
+      :disabled="!nextExercise"
       :to="{
         name: routes.activeExercise.name,
         params: {
-          exerciseId: nextExerciseId,
+          exerciseId: nextExercise.id,
         },
       }"
     >
@@ -63,7 +63,7 @@ export default {
   props: {
     session: Object,
     exercises: Array,
-    nextExerciseId: String,
+    nextExercise: Object,
   },
   data: function() {
     return {

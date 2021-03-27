@@ -3,6 +3,27 @@
     <div v-if="exercise">
       <PageHeader>{{ exercise.name }}</PageHeader>
       <v-timeline dense v-if="exercise.sets && exercise.sets.length">
+        <v-timeline-item
+          v-if="prevExercise"
+          color="secondary"
+          fill-dot
+          class="first-item"
+        >
+          <template v-slot:icon>
+            <v-icon>mdi-arrow-left</v-icon>
+          </template>
+          <v-btn
+            class="edit-button action"
+            :to="{
+              name: routes.activeExercise.name,
+              params: {
+                exerciseId: prevExercise.id,
+              },
+            }"
+          >
+            {{ prevExercise.name }}
+          </v-btn>
+        </v-timeline-item>
         <span v-for="(set, index) in exercise.sets" :key="index">
           <v-timeline-item
             fill-dot
@@ -33,7 +54,7 @@
                   <v-btn
                     v-if="index === currentSet"
                     class="edit-button action"
-                    color="green"
+                    color="success"
                     @click="nextSet"
                   >
                     Done
@@ -45,11 +66,27 @@
                   >
                     Undo
                   </v-btn>
+                  <v-btn
+                    v-if="index <= currentSet"
+                    class="edit-button action"
+                    @click="
+                      () => {
+                        editSet = JSON.parse(JSON.stringify(set));
+                        editSetIndex = index;
+                      }
+                    "
+                    icon
+                    color="primary"
+                  >
+                    <v-icon>
+                      mdi-pencil
+                    </v-icon>
+                  </v-btn>
                 </v-row>
               </v-col>
             </v-row>
           </v-timeline-item>
-          <v-timeline-item fill-dot color="secondary" icon="mdi-timer">
+          <v-timeline-item fill-dot color="accent" icon="mdi-timer">
             <v-row align-content="center" cols="6">
               <v-col>
                 <v-row>
@@ -64,71 +101,72 @@
             </v-row>
           </v-timeline-item>
         </span>
+        <v-timeline-item fill-dot color="secondary" class="final-item">
+          <template v-slot:icon>
+            <v-icon v-if="nextExercise">mdi-arrow-right</v-icon>
+            <v-icon v-else>mdi-check</v-icon>
+          </template>
+          <v-btn
+            v-if="nextExercise"
+            class="edit-button action"
+            :color="setsComplete ? 'default' : 'success'"
+            :to="{
+              name: routes.activeExercise.name,
+              params: {
+                exerciseId: nextExercise.id,
+              },
+            }"
+          >
+            {{ nextExercise.name }}
+          </v-btn>
+          <v-btn
+            v-else
+            class="edit-button action"
+            :color="setsComplete ? 'default' : 'success'"
+            :to="{
+              name: routes.sessions.name,
+            }"
+          >
+            Finish Workout
+          </v-btn>
+        </v-timeline-item>
       </v-timeline>
-      <v-btn
-        v-if="
-          nextExerciseId &&
-            exercise &&
-            exercise.sets &&
-            currentSet >= exercise.sets.length
-        "
-        color="green"
-        fab
-        large
-        bottom
-        right
-        fixed
-        :to="{
-          name: routes.activeExercise.name,
-          params: {
-            exerciseId: nextExerciseId,
-          },
-        }"
+      <EditSetDialog
+        :dialogTitle="`Edit Set ${editSetIndex + 1}`"
+        v-model="editSet"
+        :onSubmit="tryEditSet"
+        submitButtonLabel="Save"
       >
-        <v-icon>mdi-arrow-right</v-icon>
-      </v-btn>
-      <v-btn
-        v-if="
-          !nextExerciseId &&
-            (!exercise || !exercise.sets || currentSet >= exercise.sets.length)
-        "
-        color="green"
-        fab
-        large
-        bottom
-        right
-        fixed
-        :to="{
-          name: routes.sessions.name,
-        }"
-      >
-        <v-icon>mdi-check</v-icon>
-      </v-btn>
+      </EditSetDialog>
     </div>
     <SkeletonList v-else />
   </div>
 </template>
 
 <script>
-import { mapGetters, mapMutations } from "vuex";
+import { mapGetters, mapMutations, mapActions } from "vuex";
 import SkeletonList from "../components/SkeletonList";
 import PageHeader from "../components/PageHeader";
 import routes from "../router/routes";
+import EditSetDialog from "../components/EditSetDialog";
 
 export default {
   props: {
     exerciseId: String,
-    nextExerciseId: String,
-    prevExerciseId: String,
+    nextExercise: Object,
+    prevExercise: Object,
   },
   components: {
     SkeletonList,
     PageHeader,
+    EditSetDialog,
   },
   data: function() {
     return {
       currentSet: 0,
       routes,
+      editSet: null,
+      editSetIndex: null,
     };
   },
   created() {
@@ -142,14 +180,33 @@ export default {
   },
   computed: {
     ...mapGetters(["exercise"]),
+    setsComplete() {
+      return (
+        this.exercise &&
+        this.exercise.sets &&
+        this.exercise.sets.length > this.currentSet
+      );
+    },
   },
   methods: {
     ...mapMutations(["setExerciseId"]),
+    ...mapActions(["updateExercise"]),
     nextSet() {
       this.currentSet++;
     },
     previousSet() {
       this.currentSet = this.currentSet == 0 ? 0 : this.currentSet - 1;
+    },
+    tryEditSet() {
+      const newSets = [...this.exercise.sets];
+      newSets.splice(this.editSetIndex, 1, this.editSet);
+
+      return this.updateExercise({
+        ...this.exercise,
+        sets: newSets,
+      }).then(() => {
+        this.editSet = null;
+      });
     },
   },
 };
@@ -176,5 +233,14 @@ export default {
 .complete .set-content {
   text-decoration: line-through;
   opacity: 50%;
+}
+
+.first-item,
+.final-item {
+  align-items: center;
+}
+
+.final-item {
+  padding-bottom: 0;
 }
 </style>

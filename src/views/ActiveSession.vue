@@ -4,8 +4,8 @@
       <router-view
         :session="session"
         :exercises="sortedExercises"
-        :nextExerciseId="nextExerciseId"
-        :prevExerciseId="prevExerciseId"
+        :nextExercise="nextExercise"
+        :prevExercise="prevExercise"
       ></router-view>
     </div>
     <SkeletonList v-else />
@@ -37,12 +37,12 @@ export default {
     sortedExercises() {
       return [...this.exercises].sort((a, b) => a.index - b.index);
     },
-    nextExerciseId() {
+    nextExercise() {
       if (this.exerciseId) {
         for (let i = 0; i < this.sortedExercises.length; i++) {
           if (this.sortedExercises[i].id === this.exerciseId) {
             if (i + 1 < this.sortedExercises.length) {
-              return this.sortedExercises[i + 1].id;
+              return this.sortedExercises[i + 1];
             } else {
               return null;
             }
@@ -53,17 +53,17 @@ export default {
         return (
           (this.sortedExercises &&
             this.sortedExercises.length &&
-            this.sortedExercises[0].id) ||
+            this.sortedExercises[0]) ||
           null
         );
       }
     },
-    prevExerciseId() {
+    prevExercise() {
       if (this.exerciseId) {
         for (let i = 0; i < this.sortedExercises.length; i++) {
           if (this.sortedExercises[i].id === this.exerciseId) {
             if (i > 0) {
-              return this.sortedExercises[i - 1].id;
+              return this.sortedExercises[i - 1];
             } else {
               return null;
             }

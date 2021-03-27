@@ -57,7 +57,7 @@
               </v-col>
             </v-row>
           </v-timeline-item>
-          <v-timeline-item fill-dot color="secondary" icon="mdi-timer">
+          <v-timeline-item fill-dot color="accent" icon="mdi-timer">
             <v-row align-content="center" cols="6">
               <v-col>
                 <v-row>
@@ -72,11 +72,11 @@
             </v-row>
           </v-timeline-item>
         </span>
-        <v-timeline-item fill-dot color="green" class="final-item">
-          <template v-slot:icon color="green">
+        <v-timeline-item fill-dot color="success" class="final-item">
+          <template v-slot:icon color="success">
             <v-icon>mdi-plus</v-icon>
           </template>
-          <v-btn color="green" @click="() => (newSet = { ...defaultSet })">
+          <v-btn color="success" @click="() => (newSet = { ...defaultSet })">
             Add Set
           </v-btn>
         </v-timeline-item>

@@ -38,7 +38,7 @@
 
     <v-btn
       key="mdi-plus"
-      color="green"
+      color="success"
       fab
       large
       dark
