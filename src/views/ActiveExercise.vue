@@ -3,17 +3,12 @@
     <div v-if="exercise">
       <PageHeader>{{ exercise.name }}</PageHeader>
       <v-timeline dense v-if="exercise.sets && exercise.sets.length">
-        <v-timeline-item
-          v-if="prevExercise"
-          color="secondary"
-          fill-dot
-          class="first-item"
-        >
+        <Set v-if="prevExercise" dotColor="secondary" class="first-item">
           <template v-slot:icon>
             <v-icon>mdi-arrow-left</v-icon>
           </template>
           <v-btn
-            class="edit-button action"
+            class="action"
             :to="{
               name: routes.activeExercise.name,
               params: {
@@ -23,106 +18,71 @@
           >
             {{ prevExercise.name }}
           </v-btn>
-        </v-timeline-item>
+        </Set>
         <span v-for="(set, index) in exercise.sets" :key="index">
-          <v-timeline-item
-            fill-dot
-            :color="
-              index === currentSetIndex && restTime === null
-                ? 'primary'
-                : 'secondary'
+          <Set
+            :active="index === currentSetIndex && restTime === null"
+            :complete="
+              index < currentSetIndex ||
+                (index === currentSetIndex && restTime !== null)
             "
-            :class="{
-              'text--secondary': index !== currentSetIndex || restTime !== null,
-              'complete-set':
-                index < currentSetIndex ||
-                (index === currentSetIndex && restTime !== null),
-            }"
+            :actions="[
+              {
+                name: 'undo',
+                icon: 'mdi-undo',
+                onClick: () => backToSet(index),
+                disabled:
+                  index >= currentSetIndex ||
+                  (index === currentSetIndex && restTime === null),
+              },
+              {
+                name: 'edit',
+                icon: 'mdi-pencil',
+                color: 'primary',
+                onClick: () => {
+                  editSet = JSON.parse(JSON.stringify(set));
+                  editSetIndex = index;
+                },
+              },
+            ]"
           >
             <template v-slot:icon>
               <b>{{ index + 1 }}</b>
             </template>
-            <v-row align-content="center">
-              <v-col cols="6" class="set-content">
-                <v-row>
-                  <v-col class="weight cell" cols="5">
-                    <span class="value">{{ set.weight }}</span>
-                    <span class="label text--secondary">lbs</span>
-                  </v-col>
-                  <v-col class="divider text--secondary" cols="2">
-                    ×
-                  </v-col>
-                  <v-col class="reps cell" cols="5">
-                    <span class="value">{{ set.reps }}</span>
-                    <span class="label text--secondary">reps</span>
-                  </v-col>
-                </v-row>
+            <v-row>
+              <v-col class="weight cell" cols="5">
+                <span class="value">{{ set.weight }}</span>
+                <span class="label text--secondary">lbs</span>
               </v-col>
-              <v-col class="actions" cols="6" align-self="center">
-                <v-row align="end" justify="end">
-                  <v-btn
-                    v-if="
-                      index < currentSetIndex ||
-                        (index === currentSetIndex && restTime !== null)
-                    "
-                    class="edit-button action"
-                    @click="() => backToSet(index)"
-                    icon
-                  >
-                    <v-icon>mdi-undo</v-icon>
-                  </v-btn>
-                  <v-btn
-                    class="edit-button action"
-                    @click="
-                      () => {
-                        editSet = JSON.parse(JSON.stringify(set));
-                        editSetIndex = index;
-                      }
-                    "
-                    icon
-                    color="primary"
-                  >
-                    <v-icon>mdi-pencil</v-icon>
-                  </v-btn>
-                </v-row>
+              <v-col class="divider text--secondary" cols="2">
+                ×
+              </v-col>
+              <v-col class="reps cell" cols="5">
+                <span class="value">{{ set.reps }}</span>
+                <span class="label text--secondary">reps</span>
               </v-col>
             </v-row>
-          </v-timeline-item>
-          <v-timeline-item
-            fill-dot
-            :color="
-              index === currentSetIndex && restTime !== null
-                ? 'accent'
-                : 'secondary'
-            "
-            icon="mdi-timer"
-            :class="{
-              'text--secondary': index !== currentSetIndex || restTime === null,
-              'complete-set': index < currentSetIndex,
-            }"
+          </Set>
+          <Set
+            dotColor="accent"
+            :active="index === currentSetIndex && restTime !== null"
+            :complete="index < currentSetIndex"
           >
-            <v-row align-content="center" class="set-content" cols="6">
-              <v-col>
-                <v-row>
-                  <v-col class="rest cell" cols="5">
-                    <span class="value">{{ set.rest }}</span>
-                    <span class="label text--secondary">sec</span>
-                  </v-col>
-                  <v-col cols="7" />
-                </v-row>
-              </v-col>
-              <v-col cols="6"> </v-col>
-            </v-row>
-          </v-timeline-item>
+            <template v-slot:icon>
+              <v-icon>mdi-timer</v-icon>
+            </template>
+            <div class="set-content">
+              <span class="value">{{ set.rest }}</span>
+              <span class="label text--secondary">sec</span>
+            </div>
+          </Set>
         </span>
-        <v-timeline-item fill-dot color="secondary" class="final-item">
+        <Set v-if="nextExercise" dotColor="secondary" class="final-item">
           <template v-slot:icon>
-            <v-icon v-if="nextExercise">mdi-arrow-right</v-icon>
-            <v-icon v-else>mdi-check</v-icon>
+            <v-icon>mdi-arrow-right</v-icon>
           </template>
           <v-btn
-            v-if="nextExercise"
-            class="edit-button action"
+            class="action"
             :to="{
               name: routes.activeExercise.name,
               params: {
@@ -132,16 +92,20 @@
           >
             {{ nextExercise.name }}
           </v-btn>
+        </Set>
+        <Set v-else dotColor="secondary" class="final-item">
+          <template v-slot:icon>
+            <v-icon>mdi-check</v-icon>
+          </template>
           <v-btn
-            v-else
-            class="edit-button action"
+            class="action"
             :to="{
               name: routes.sessions.name,
             }"
           >
             Finish Workout
           </v-btn>
-        </v-timeline-item>
+        </Set>
       </v-timeline>
       <v-btn
         v-show="!setsComplete && restTime === null"
@@ -178,26 +142,20 @@
         <v-btn
           fab
           small
-          color="success"
+          color="primary"
           @click="
             () => {
-              restPaused = !restPaused;
+              restPaused ? resumeRest() : pauseRest();
             }
           "
         >
           <v-icon v-if="restPaused">mdi-play</v-icon>
           <v-icon v-else>mdi-pause</v-icon>
         </v-btn>
-        <v-btn
-          fab
-          small
-          color="error"
-          @click="
-            () => {
-              restTime = null;
-            }
-          "
-        >
+        <v-btn fab small color="success" @click="() => stopRest(false)">
+          <v-icon>mdi-fast-forward</v-icon>
+        </v-btn>
+        <v-btn fab small color="error" @click="() => stopRest(true)">
           <v-icon>mdi-stop</v-icon>
         </v-btn>
       </v-speed-dial>
@@ -250,6 +208,7 @@ import SkeletonList from "../components/SkeletonList";
 import PageHeader from "../components/PageHeader";
 import routes from "../router/routes";
 import EditSetDialog from "../components/EditSetDialog";
+import Set from "../components/Set";
 
 const AUDIO_CONTEXT = new (window.AudioContext ||
   window.webkitAudioContext ||
@@ -265,6 +224,7 @@ export default {
     SkeletonList,
     PageHeader,
     EditSetDialog,
+    Set,
   },
   data: function() {
     return {
@@ -292,18 +252,14 @@ export default {
       if (this.restInterval) {
         this.currentSetIndex = -1;
       } else {
-        this.restTime = null;
+        this.stopRest(true);
         this.currentSetIndex = 0;
       }
     },
     restTime: function(newRestTime) {
-      if (newRestTime === null) {
-        clearInterval(this.restInterval);
-        this.restInterval = null;
-        this.currentSetIndex++;
-      } else if (newRestTime === 0) {
+      if (newRestTime === 0) {
         this.beep(500, 1500);
-        this.restTime = null;
+        this.stopRest();
       } else if (newRestTime === 1) {
         this.beep(250, 1000);
       } else if (newRestTime === 2) {
@@ -311,15 +267,7 @@ export default {
       } else if (newRestTime === 3) {
         this.beep(250, 1000);
       } else if (newRestTime < 0) {
-        this.restTime = null;
-      }
-    },
-    restPaused: function(newRestPaused) {
-      if (newRestPaused) {
-        clearInterval(this.restInterval);
-        this.restInterval = null;
-      } else {
-        this.startRest(this.restTime);
+        this.stopRest(true);
       }
     },
   },
@@ -346,14 +294,38 @@ export default {
     ...mapMutations(["setExerciseId"]),
     ...mapActions(["updateExercise"]),
     startRest(time, reset) {
+      this.restPaused = false;
       this.originalRestTime = reset ? time : this.originalRestTime;
       this.restTime = time;
       this.restInterval = setInterval(() => {
         this.restTime = this.restTime === null ? null : this.restTime - 1;
       }, 1000);
     },
-    backToSet(index) {
+    pauseRest() {
+      if (!this.restPaused) {
+        this.restPaused = true;
+        clearInterval(this.restInterval);
+        this.restInterval = null;
+      }
+    },
+    resumeRest() {
+      if (this.restPaused) {
+        this.restPaused = false;
+        this.startRest(this.restTime);
+      }
+    },
+    stopRest(reset) {
+      clearInterval(this.restInterval);
+      this.restInterval = null;
       this.restTime = null;
+      this.restPaused = false;
+
+      if (reset !== true) {
+        this.currentSetIndex++;
+      }
+    },
+    backToSet(index) {
+      this.stopRest(true);
       this.currentSetIndex = index;
     },
     tryEditSet() {
@@ -392,7 +364,7 @@ export default {
   text-align: center;
 }
 
-.cell .value,
+.set-content .value,
 .divider {
   font-size: 1.5rem;
 }
@@ -403,15 +375,6 @@ export default {
 
 .action {
   margin-right: 1rem;
-}
-
-.upcoming-set .set-content {
-  color: gray;
-}
-
-.complete-set .set-content {
-  text-decoration: line-through;
-  color: gray;
 }
 
 .first-item,
