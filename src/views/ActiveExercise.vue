@@ -8,7 +8,8 @@
             <v-icon>mdi-arrow-left</v-icon>
           </template>
           <v-btn
-            class="action"
+            class="adjacent-exercise-button"
+            rounded
             :to="{
               name: routes.activeExercise.name,
               params: {
@@ -16,7 +17,7 @@
               },
             }"
           >
-            {{ prevExercise.name }}
+            <span class="button-text">{{ prevExercise.name }}</span>
           </v-btn>
         </Set>
         <span v-for="(set, index) in exercise.sets" :key="index">
@@ -82,7 +83,8 @@
             <v-icon>mdi-arrow-right</v-icon>
           </template>
           <v-btn
-            class="action"
+            class="adjacent-exercise-button"
+            rounded
             :to="{
               name: routes.activeExercise.name,
               params: {
@@ -90,7 +92,7 @@
               },
             }"
           >
-            {{ nextExercise.name }}
+            <span class="button-text">{{ nextExercise.name }}</span>
           </v-btn>
         </Set>
         <Set v-else dotColor="secondary" class="final-item">
@@ -98,12 +100,13 @@
             <v-icon>mdi-check</v-icon>
           </template>
           <v-btn
-            class="action"
+            class="adjacent-exercise-button"
+            rounded
             :to="{
               name: routes.sessions.name,
             }"
           >
-            Finish Workout
+            <span class="button-text">Finish Workout</span>
           </v-btn>
         </Set>
       </v-timeline>
@@ -387,6 +390,18 @@ export default {
 
 .action {
   margin-right: 1rem;
+}
+
+.adjacent-exercise-button {
+  max-width: 60vw;
+  overflow: hidden;
+}
+
+.adjacent-exercise-button .button-text {
+  max-width: 55vw;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .first-item,
