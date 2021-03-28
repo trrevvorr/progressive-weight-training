@@ -1,5 +1,10 @@
 <template>
-  <v-timeline-item fill-dot :color="dynamicDotColor" class="set">
+  <v-timeline-item
+    fill-dot
+    :large="active"
+    :color="dynamicDotColor"
+    :class="{ set: true, active: active }"
+  >
     <template v-slot:icon>
       <span class="dot-container">
         <slot class="dot-icon" name="icon"></slot>
@@ -8,7 +13,7 @@
     </template>
     <v-row align-content="center">
       <v-col
-        :cols="enabledActions.length ? 6 : 12"
+        :cols="enabledActions.length ? 7 : 12"
         class="set-content"
         :style="{ color: fontColor }"
       >
@@ -17,7 +22,7 @@
       <v-col
         v-if="enabledActions.length"
         class="actions"
-        cols="6"
+        cols="5"
         align-self="center"
       >
         <v-row align="end" justify="end">
@@ -40,8 +45,6 @@
 </template>
 
 <script>
-import colors from "vuetify/lib/util/colors";
-
 export default {
   props: {
     dotColor: {
@@ -54,16 +57,10 @@ export default {
   },
   computed: {
     dynamicDotColor() {
-      return this.complete || !this.active
-        ? this.$vuetify.theme.themes.dark.secondary
-        : this.dotColor;
+      return this.complete || !this.active ? "secondary" : this.dotColor;
     },
     fontColor() {
-      return this.complete
-        ? colors.grey.darken1
-        : this.active
-        ? "default"
-        : colors.grey;
+      return this.complete ? "gray" : null;
     },
     enabledActions() {
       return this.actions
@@ -96,5 +93,8 @@ export default {
 
 .set {
   align-items: center;
+}
+.active.set {
+  font-size: 1.2rem;
 }
 </style>

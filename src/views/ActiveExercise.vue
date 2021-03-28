@@ -47,19 +47,19 @@
             ]"
           >
             <template v-slot:icon>
-              <b>{{ index + 1 }}</b>
+              <span class="set-number">{{ index + 1 }}</span>
             </template>
             <v-row>
               <v-col class="weight cell" cols="5">
                 <span class="value">{{ set.weight }}</span>
-                <span class="label text--secondary">lbs</span>
+                <span class="label">lbs</span>
               </v-col>
-              <v-col class="divider text--secondary" cols="2">
+              <v-col class="divider" cols="2">
                 ×
               </v-col>
               <v-col class="reps cell" cols="5">
                 <span class="value">{{ set.reps }}</span>
-                <span class="label text--secondary">reps</span>
+                <span class="label">reps</span>
               </v-col>
             </v-row>
           </Set>
@@ -73,7 +73,7 @@
             </template>
             <div class="set-content">
               <span class="value">{{ set.rest }}</span>
-              <span class="label text--secondary">sec</span>
+              <span class="label">sec</span>
             </div>
           </Set>
         </span>
@@ -366,10 +366,15 @@ export default {
 
 .set-content .value,
 .divider {
-  font-size: 1.5rem;
+  font-size: 1.5em;
 }
 
-.cell .label {
+.set-content .label,
+.divider {
+  color: gray;
+}
+
+.set-content .label {
   margin-left: 0.25rem;
 }
 
@@ -384,5 +389,10 @@ export default {
 
 .final-item {
   padding-bottom: 0;
+}
+
+.set-number {
+  font-weight: bold;
+  font-size: 1.25em;
 }
 </style>
