@@ -60,11 +60,11 @@
         </v-card-actions>
       </v-card>
     </div>
-    <v-row v-else class="no-exercises-message" justify="center">
+    <Centered v-else>
       <p class="text--secondary">
         Click the "+" to create your first exercise
       </p>
-    </v-row>
+    </Centered>
 
     <v-btn
       color="success"
@@ -100,6 +100,7 @@ import { mapActions, mapGetters } from "vuex";
 import SubmitButton from "../components/SubmitButton";
 import PageHeader from "../components/PageHeader";
 import EditDialog from "../components/EditDialog";
+import Centered from "../components/Centered";
 import routes from "../router/routes";
 
 export default {
@@ -107,6 +108,7 @@ export default {
     SubmitButton,
     PageHeader,
     EditDialog,
+    Centered,
   },
   props: {
     session: Object,
@@ -164,7 +166,6 @@ export default {
     },
     moveItemInArray(array, from, to) {
       const copy = [...array];
-      // splice(index, numElmentsToDelete, elementToInsert)
       const elementToMove = copy.splice(from, 1)[0];
       copy.splice(to, 0, elementToMove);
       return copy;
@@ -190,11 +191,5 @@ export default {
 .card-title {
   word-break: break-word;
   text-transform: capitalize;
-}
-
-.no-exercises-message {
-  position: absolute;
-  top: 50%;
-  width: 100%;
 }
 </style>

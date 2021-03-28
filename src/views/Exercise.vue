@@ -61,6 +61,14 @@
           </v-btn>
         </Set>
       </v-timeline>
+      <Centered v-else>
+        <div class="text--secondary">
+          There are no sets in this exercise
+        </div>
+        <v-btn text color="primary" @click="() => (newSet = { ...defaultSet })">
+          Add Set
+        </v-btn>
+      </Centered>
       <EditSetDialog
         :dialogTitle="`Edit Set ${editSetIndex + 1}`"
         v-model="editSet"
@@ -85,6 +93,7 @@ import { mapGetters, mapMutations, mapActions } from "vuex";
 import SkeletonList from "../components/SkeletonList";
 import PageHeader from "../components/PageHeader";
 import EditSetDialog from "../components/EditSetDialog";
+import Centered from "../components/Centered";
 import Set from "../components/Set";
 
 export default {
@@ -96,6 +105,7 @@ export default {
     PageHeader,
     EditSetDialog,
     Set,
+    Centered,
   },
   data: function() {
     return {

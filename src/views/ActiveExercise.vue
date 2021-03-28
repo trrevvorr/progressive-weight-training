@@ -107,6 +107,11 @@
           </v-btn>
         </Set>
       </v-timeline>
+      <Centered v-else>
+        <div class="text--secondary">
+          There are no sets in this exercise
+        </div>
+      </Centered>
       <v-btn
         v-show="!setsComplete && restTime === null"
         color="success"
@@ -209,6 +214,7 @@ import PageHeader from "../components/PageHeader";
 import routes from "../router/routes";
 import EditSetDialog from "../components/EditSetDialog";
 import Set from "../components/Set";
+import Centered from "../components/Centered";
 
 const AUDIO_CONTEXT = new (window.AudioContext ||
   window.webkitAudioContext ||
@@ -225,6 +231,7 @@ export default {
     PageHeader,
     EditSetDialog,
     Set,
+    Centered,
   },
   data: function() {
     return {

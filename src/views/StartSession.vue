@@ -24,13 +24,13 @@
           </template>
         </v-timeline-item>
       </v-timeline>
-      <div v-else class="no-exercises-message">
+      <Centered v-else>
         <p class="text--secondary">
           There are no exercises in this sesssion. You can add exercises
           <router-link :to="{ name: routes.exercises.name }"> here</router-link
           >.
         </p>
-      </div>
+      </Centered>
     </div>
     <v-btn
       color="success"
@@ -43,7 +43,7 @@
       :to="{
         name: routes.activeExercise.name,
         params: {
-          exerciseId: nextExercise.id,
+          exerciseId: nextExercise && nextExercise.id,
         },
       }"
     >
@@ -55,10 +55,12 @@
 <script>
 import routes from "../router/routes";
 import PageHeader from "../components/PageHeader";
+import Centered from "../components/Centered";
 
 export default {
   components: {
     PageHeader,
+    Centered,
   },
   props: {
     session: Object,
@@ -85,12 +87,5 @@ export default {
 
 .final-item {
   padding-bottom: 0;
-}
-
-.no-exercises-message {
-  text-align: center;
-  position: absolute;
-  top: 50%;
-  width: 80%;
 }
 </style>
