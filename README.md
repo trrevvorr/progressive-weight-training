@@ -5,6 +5,11 @@
 npm install
 ```
 
+### Vue UI Config Editor
+```
+vue ui
+```
+
 ### Compiles and hot-reloads for development
 ```
 npm run serve
