@@ -45,12 +45,21 @@
         <router-view class="body" />
       </v-container>
     </v-main>
+    <v-snackbar bottom :value="updateExists" :timeout="-1">
+      An update is available
+      <template v-slot:action>
+        <v-btn text color="primary" @click="refreshApp">
+          Update
+        </v-btn>
+      </template>
+    </v-snackbar>
   </v-app>
 </template>
 
 <script>
 import routes from "./router/routes";
 import { mapGetters } from "vuex";
+import update from "./mixins/update";
 
 export default {
   name: "App",
@@ -59,6 +68,7 @@ export default {
       drawer: false,
     };
   },
+  mixins: [update],
   watch: {},
   computed: {
     ...mapGetters(["userId", "routine", "session", "exercise"]),
