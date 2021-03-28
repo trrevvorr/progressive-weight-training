@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="container">
     <div v-if="exercise">
       <PageHeader>{{ exercise.name }}</PageHeader>
       <v-timeline dense v-if="exercise.sets && exercise.sets.length">
@@ -394,5 +394,9 @@ export default {
 .set-number {
   font-weight: bold;
   font-size: 1.25em;
+}
+
+.container {
+  margin-bottom: 5rem;
 }
 </style>
